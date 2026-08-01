@@ -7,32 +7,36 @@ import { Building2, Flame, HandHeart, type LucideIcon } from "lucide-react";
 import { RESTAURANT_DATA } from "@/data/restaurantData";
 import { UI, type L } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
+import { useRevealFallback } from "@/lib/reveal";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
 const HIGHLIGHTS: { icon: LucideIcon; title: L; text: L }[] = [
   {
     icon: Building2,
-    title: { en: "A Fourth-Floor Surprise", ja: "4階のサプライズ" },
+    title: { en: "Up on the Fourth Floor", ja: "4階にあります" },
     text: {
-      en: "Follow our street-level signboard up the Hijikata Building — an elevator ride away from one of Kyoto's warmest dining rooms.",
-      ja: "通りの看板を目印にヒジカタビルへ。エレベーターを上がれば、京都で一番温かなダイニングが待っています。",
+      en: "Follow the signboard into the Hijikata Building and take the lift up.",
+      ja: "通りの看板を目印にヒジカタビルへ。エレベーターで4階まで。",
     },
   },
   {
     icon: Flame,
-    title: { en: "Your Palate, Your Spice", ja: "あなた好みの辛さで" },
+    title: { en: "Your Spice, Your Call", ja: "辛さはお好みで" },
     text: {
-      en: "Every curry is adjusted to your exact spice level — from gentle and aromatic to boldly fiery, cooked fresh to order.",
-      ja: "すべてのカレーはご注文ごとに作りたて。マイルドから激辛まで、お好みの辛さに調整します。",
+      en: "Five levels, from mild to very hot. Every curry is cooked to order.",
+      ja: "甘口から激辛まで5段階。カレーはご注文ごとにお作りします。",
     },
   },
   {
     icon: HandHeart,
-    title: { en: "Jain & Vegetarian Devotion", ja: "ジャイン＆ベジタリアンへの想い" },
+    title: {
+      en: "Jain, Vegetarian & Halal",
+      ja: "ジャイン・ベジタリアン・ハラール",
+    },
     text: {
-      en: "Dedicated Jain and vegetarian menus prepared with absolute care, honoring tradition without compromise.",
-      ja: "伝統に忠実なジャイン・ベジタリアン専用メニューを、一切の妥協なく心を込めてご用意します。",
+      en: "Just ask — we prepare them properly, not as an afterthought.",
+      ja: "お申し付けください。きちんと分けてお作りします。",
     },
   },
 ];
@@ -40,6 +44,7 @@ const HIGHLIGHTS: { icon: LucideIcon; title: L; text: L }[] = [
 export default function Story() {
   const { contact } = RESTAURANT_DATA;
   const { t } = useLang();
+  const revealed = useRevealFallback();
 
   return (
     <section id="story" className="relative overflow-hidden py-20 md:py-28">
@@ -53,7 +58,8 @@ export default function Story() {
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
+          animate={revealed ? { opacity: 1, y: 0 } : undefined}
+          viewport={{ once: true, amount: 0.05 }}
           transition={{ duration: 0.7, ease: easeOut }}
         >
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-saffron-bright">
@@ -73,8 +79,13 @@ export default function Story() {
                 key={highlight.title.en}
                 initial={{ opacity: 0, x: -24 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ delay: index * 0.12, duration: 0.55, ease: easeOut }}
+                animate={revealed ? { opacity: 1, x: 0 } : undefined}
+                viewport={{ once: true, amount: 0.05 }}
+                transition={{
+                  delay: index * 0.12,
+                  duration: 0.55,
+                  ease: easeOut,
+                }}
                 className="flex items-start gap-4"
               >
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-saffron/25 bg-saffron/10">
@@ -101,7 +112,8 @@ export default function Story() {
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            animate={revealed ? { opacity: 1, y: 0 } : undefined}
+            viewport={{ once: true, amount: 0.05 }}
             transition={{ duration: 0.7, ease: easeOut }}
             className="relative aspect-[4/5] w-4/5 overflow-hidden rounded-3xl border border-white/10"
           >
@@ -117,7 +129,8 @@ export default function Story() {
           <motion.div
             initial={{ opacity: 0, y: 56 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            animate={revealed ? { opacity: 1, y: 0 } : undefined}
+            viewport={{ once: true, amount: 0.05 }}
             transition={{ delay: 0.15, duration: 0.7, ease: easeOut }}
             className="absolute -bottom-10 right-0 aspect-square w-1/2 overflow-hidden rounded-3xl border border-white/10 shadow-[0_24px_64px_-24px_rgba(0,0,0,0.8)]"
           >
@@ -134,7 +147,8 @@ export default function Story() {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
+            animate={revealed ? { opacity: 1, scale: 1 } : undefined}
+            viewport={{ once: true, amount: 0.05 }}
             transition={{ delay: 0.35, duration: 0.5, ease: easeOut }}
             className="absolute -left-2 top-8 rounded-2xl border border-white/10 bg-obsidian-card/90 px-5 py-4 shadow-[0_16px_48px_-16px_rgba(0,0,0,0.8)] backdrop-blur-md sm:-left-6"
           >

@@ -21,11 +21,12 @@ import SectionHeading from "@/components/SectionHeading";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { buildBookingUrl, cn, scrollToSection } from "@/lib/utils";
+import { useRevealFallback } from "@/lib/reveal";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-80px" },
+  viewport: { once: true, amount: 0.05 },
   transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
 };
 
@@ -34,6 +35,8 @@ const NAV_IDS = ["story", "menu", "gallery", "reviews", "visit"] as const;
 export default function Footer() {
   const { metadata, contact, paymentMethods } = RESTAURANT_DATA;
   const { lang, t } = useLang();
+  const revealed = useRevealFallback();
+  const revealFallback = revealed ? { opacity: 1, y: 0 } : undefined;
   const [copied, setCopied] = useState(false);
   // Computed post-mount so the visit date (tomorrow) never causes a hydration mismatch.
   const [bookingUrl, setBookingUrl] = useState(
@@ -68,6 +71,7 @@ export default function Footer() {
           {/* Contact & hours card */}
           <motion.div
             {...fadeUp}
+            animate={revealFallback}
             className="flex flex-col gap-8 rounded-3xl border border-white/10 bg-obsidian-card p-6 sm:p-8"
           >
             <div className="flex items-start gap-4">
@@ -181,6 +185,7 @@ export default function Footer() {
           {/* Embedded map */}
           <motion.div
             {...fadeUp}
+            animate={revealFallback}
             transition={{ ...fadeUp.transition, delay: 0.12 }}
             className="overflow-hidden rounded-3xl border border-white/10 bg-obsidian-card"
           >

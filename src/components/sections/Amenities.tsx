@@ -17,6 +17,7 @@ import { RESTAURANT_DATA, type AmenityIcon } from "@/data/restaurantData";
 import { UI } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
 import SectionHeading from "@/components/SectionHeading";
+import { useRevealFallback } from "@/lib/reveal";
 
 const AMENITY_ICONS: Record<AmenityIcon, LucideIcon> = {
   Utensils,
@@ -46,6 +47,7 @@ const item = {
 export default function Amenities() {
   const { amenities } = RESTAURANT_DATA;
   const { t } = useLang();
+  const revealed = useRevealFallback();
 
   return (
     <section id="amenities" className="bg-obsidian-soft py-20 md:py-28">
@@ -60,7 +62,8 @@ export default function Amenities() {
           variants={container}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
+          animate={revealed ? "visible" : undefined}
+          viewport={{ once: true, amount: 0.05 }}
           className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4"
         >
           {amenities.map((amenity) => {
