@@ -252,6 +252,17 @@ export default function Footer() {
           <p className="text-center text-xs leading-relaxed text-stone-500 md:text-right">
             © {new Date().getFullYear()} {metadata.legalName}
             <span className="block">{t(UI.visit.crafted)}</span>
+            <span className="mt-1 block">
+              {t(UI.visit.builtBy)}{" "}
+              <a
+                href="https://www.digistartjp.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-stone-400 transition-colors hover:text-saffron-glow"
+              >
+                DigiStart
+              </a>
+            </span>
           </p>
         </div>
       </div>

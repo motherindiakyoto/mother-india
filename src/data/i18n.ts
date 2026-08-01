@@ -113,5 +113,6 @@ export const UI = {
     tabelogMenu: { en: "Menu on Tabelog", ja: "食べログのメニュー" },
     googleMaps: { en: "Google Maps", ja: "Googleマップ" },
     crafted: { en: "Crafted with warmth in Kyoto", ja: "京都より心を込めて" },
+    builtBy: { en: "Website by", ja: "制作" },
   },
 } as const;
