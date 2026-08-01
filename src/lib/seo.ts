@@ -2,10 +2,28 @@ import { RESTAURANT_DATA } from "@/data/restaurantData";
 
 /**
  * Canonical origin for the site. Every absolute URL in metadata, the sitemap,
- * robots.txt and the structured data derives from this one value — change it
- * here and nowhere else.
+ * robots.txt and the structured data derives from this one value.
+ *
+ * Order matters. A hardcoded origin that doesn't resolve breaks link previews
+ * everywhere — WhatsApp, iMessage, X and Facebook fetch `og:image` as an
+ * absolute URL, so a dead host renders an empty card. Resolution order:
+ *
+ *  1. `NEXT_PUBLIC_SITE_URL` — set this once the real domain is live.
+ *  2. The Vercel production domain, so deployments are always self-consistent.
+ *  3. localhost for `next dev`.
  */
-export const SITE_URL = "https://motherindiakyoto.com";
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, "");
+
+  const vercel =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  if (vercel) return `https://${vercel.replace(/\/$/, "")}`;
+
+  return "http://localhost:3000";
+}
+
+export const SITE_URL = resolveSiteUrl();
 
 /**
  * schema.org/Restaurant payload for the JSON-LD block in the root layout.
