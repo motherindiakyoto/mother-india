@@ -41,8 +41,6 @@ export interface PricedItem {
 export interface FullMenuSection {
   id: string;
   name: L;
-  /** Optional note rendered above the section's item list. */
-  note?: L;
   /** Optional feature image shown beside the section's list. */
   image?: { src: string; alt: string; caption: L };
   items: PricedItem[];
@@ -95,10 +93,13 @@ export interface RestaurantData {
     hours: { schedule: ScheduleEntry[]; note: L };
   };
   amenities: Amenity[];
-  paymentMethods: { modes: L[]; note: L };
+  paymentMethods: {
+    modes: L[];
+    note: L;
+    /** Compact brand list for the hero strip — no trailing sentence. */
+    cardBrands: L;
+  };
   fullMenu: {
-    /** The nine curry choices offered with every dinner set. */
-    curryChoices: L[];
     sections: FullMenuSection[];
   };
   gallery: GalleryImage[];
@@ -225,34 +226,23 @@ export const RESTAURANT_DATA: RestaurantData = {
       en: "Visa, Mastercard, JCB, Amex, Diners and Discover accepted.",
       ja: "VISA・Mastercard・JCB・AMEX・Diners・Discover がご利用いただけます。",
     },
+    cardBrands: {
+      en: "Visa · Mastercard · JCB · Amex · Diners · Discover",
+      ja: "VISA・Mastercard・JCB・AMEX・Diners・Discover",
+    },
   },
 
   fullMenu: {
-    curryChoices: [
-      { en: "Today Curry", ja: "日替わりカレー" },
-      { en: "Vegetable Curry", ja: "野菜カレー" },
-      { en: "Chicken Curry", ja: "チキンカレー" },
-      { en: "Sag Chicken Curry", ja: "ほうれん草チキン" },
-      { en: "Butter Chicken Curry", ja: "バターチキン" },
-      { en: "Keema Curry", ja: "キーマカレー" },
-      { en: "Seafood Curry", ja: "シーフードカレー" },
-      { en: "Dal Curry", ja: "ダル（豆）" },
-      { en: "Mutton Curry", ja: "マトンカレー" },
-    ],
     sections: [
       {
         id: "sets",
         name: { en: "Dinner Sets", ja: "ディナーセット" },
-        note: {
-          en: "Pick your curry from the nine below. Swap the plain nan for another nan for a small extra charge — and plain nan refills are free with any set.",
-          ja: "カレーは下記9種類からお選びください。プレーンナンは追加料金で他のナンに変更でき、セットのお客様はプレーンナンおかわり無料です。",
-        },
         image: {
           src: "/images/menu/cheese-naan-set.jpg",
           alt: "Cheese nan set with curry, rice, salad, chicken tikka and a drink on a steel thali",
           caption: {
-            en: "The Cheese Nan Set — our most-ordered plate",
-            ja: "チーズナンセット — 一番人気",
+            en: "Cheese Nan Set",
+            ja: "チーズナンセット",
           },
         },
         items: [
@@ -347,50 +337,34 @@ export const RESTAURANT_DATA: RestaurantData = {
       {
         id: "curry",
         name: { en: "Curry", ja: "カレー" },
-        note: {
-          en: "Five spice levels: mild, normal, medium hot, double hot, very hot. Just tell us where you land.",
-          ja: "辛さは5段階（甘口・普通・中辛・大辛・激辛）。お好みをお伝えください。",
-        },
         image: {
           src: "/images/menu/naan-thali.jpg",
           alt: "Fresh nan with curry, chicken tikka and rice on a steel thali",
           caption: {
-            en: "Every curry arrives with fresh nan, rice and papad",
-            ja: "焼きたてナン、ライス、パパド添えでお出しします",
+            en: "Curry with nan, rice and papad",
+            ja: "カレー、ナン、ライス、パパド",
           },
         },
         items: [
           {
             name: { en: "Chicken Curry", ja: "チキンカレー" },
             price: "¥1,050",
-            description: {
-              en: "Classic spiced curry with tender chicken",
-              ja: "柔らかチキンの定番スパイスカレー",
-            },
           },
           {
             name: { en: "Chicken Masala", ja: "チキンマサラ" },
             price: "¥1,100",
-            description: {
-              en: "Chicken cooked with aromatic masala spices",
-              ja: "香り高いマサラで仕上げたチキン",
-            },
           },
           {
             name: { en: "Butter Chicken", ja: "バターチキン" },
             price: "¥1,200",
             recommended: true,
-            description: {
-              en: "Simmered in creamy butter and tomato",
-              ja: "バターとトマトのクリーミーな煮込み",
-            },
           },
           {
             name: { en: "Sag Chicken Curry", ja: "ほうれん草チキン" },
             price: "¥1,100",
             description: {
-              en: "Chicken cooked with spinach paste",
-              ja: "ほうれん草ペーストで煮込んだチキン",
+              en: "With spinach",
+              ja: "ほうれん草仕立て",
             },
           },
           {
@@ -399,42 +373,34 @@ export const RESTAURANT_DATA: RestaurantData = {
               ja: "チキンティッカ バターマサラ",
             },
             price: "¥1,200",
-            description: {
-              en: "Tandoori chicken tikka in a rich buttery masala",
-              ja: "タンドリーチキンティッカを濃厚バターマサラで",
-            },
           },
           {
             name: { en: "Keema Curry", ja: "キーマカレー" },
             price: "¥1,050",
             description: {
-              en: "Minced meat curry with fragrant spices",
-              ja: "香り立つスパイスの挽肉カレー",
+              en: "Minced meat",
+              ja: "挽肉のカレー",
             },
           },
           {
             name: { en: "Keema Egg Curry", ja: "キーマエッグカレー" },
             price: "¥1,090",
             description: {
-              en: "Keema curry with boiled eggs",
-              ja: "ゆで卵入りのキーマカレー",
+              en: "Keema with boiled egg",
+              ja: "ゆで卵入り",
             },
           },
           {
             name: { en: "Kadai Chicken Curry", ja: "カダイチキンカレー" },
             price: "¥1,450",
             description: {
-              en: "Onions, bell peppers and tandoori chicken",
-              ja: "玉ねぎ、ピーマン、タンドリーチキン入り",
+              en: "With onion & bell pepper",
+              ja: "玉ねぎ・ピーマン入り",
             },
           },
           {
             name: { en: "Chicken Cheese Curry", ja: "チキンチーズカレー" },
             price: "¥1,200",
-            description: {
-              en: "Rich chicken curry topped with melted cheese",
-              ja: "とろけるチーズをのせた濃厚チキンカレー",
-            },
           },
           {
             name: { en: "Green Curry (Thai)", ja: "グリーンカレー" },
@@ -448,33 +414,21 @@ export const RESTAURANT_DATA: RestaurantData = {
           {
             name: { en: "Mutton Curry", ja: "マトンカレー" },
             price: "¥1,150",
-            description: {
-              en: "Bone-in mutton simmered in spices",
-              ja: "骨付きマトンをスパイスで煮込んで",
-            },
           },
           {
             name: { en: "Mutton Masala", ja: "マトンマサラ" },
             price: "¥1,250",
-            description: {
-              en: "Mutton in a flavorful masala sauce",
-              ja: "風味豊かなマサラソースのマトン",
-            },
           },
           {
             name: { en: "Sag Mutton Curry", ja: "ほうれん草マトン" },
             price: "¥1,250",
-            description: {
-              en: "Mutton and spinach",
-              ja: "マトンとほうれん草",
-            },
           },
           {
             name: { en: "Kadai Mutton Curry", ja: "カダイマトンカレー" },
             price: "¥1,350",
             description: {
-              en: "Mutton with onions and bell peppers",
-              ja: "玉ねぎとピーマン入りのマトンカレー",
+              en: "With onion & bell pepper",
+              ja: "玉ねぎ・ピーマン入り",
             },
           },
         ],
@@ -482,107 +436,59 @@ export const RESTAURANT_DATA: RestaurantData = {
       {
         id: "tandoori",
         name: { en: "Tandoori", ja: "タンドーリ" },
-        note: {
-          en: "Marinated overnight, grilled in the clay oven, served on a sizzling plate.",
-          ja: "一晩マリネして窯焼き。熱々の鉄板でお出しします。",
-        },
         image: {
           src: "/images/menu/naan-curry-set.jpg",
           alt: "Tandoori chicken pieces beside nan, curry, rice and papad on a thali",
           caption: {
-            en: "Straight off the skewer, still smoking",
-            ja: "串から下ろしたばかりの熱々を",
+            en: "Tandoori chicken, off the skewer",
+            ja: "タンドリーチキン",
           },
         },
         items: [
           {
             name: { en: "Tandoori Chicken", ja: "タンドリーチキン" },
-            price: "¥700 / ¥1,300",
+            price: "Half ¥700 · Full ¥1,300",
             recommended: true,
-            description: {
-              en: "Half ¥700 · full ¥1,300 — yogurt-and-spice marinade, roasted in the tandoor",
-              ja: "ハーフ¥700／フル¥1,300 — ヨーグルトとスパイスに漬け込んで窯焼き",
-            },
           },
           {
             name: { en: "Seekh Kebab", ja: "シシカバブ" },
-            price: "¥600 / ¥1,150",
-            description: {
-              en: "2p ¥600 · 4p ¥1,150 — spiced minced meat grilled on skewers",
-              ja: "2p ¥600／4p ¥1,150 — スパイス挽肉の串焼き",
-            },
+            price: "2p ¥600 · 4p ¥1,150",
           },
           {
             name: { en: "Malai Tikka", ja: "マライティッカ" },
-            price: "¥550 / ¥1,050",
-            description: {
-              en: "2p ¥550 · 4p ¥1,050 — chicken in a creamy marinade, tenderly grilled",
-              ja: "2p ¥550／4p ¥1,050 — クリーミーなマリネでやわらかく焼き上げ",
-            },
+            price: "2p ¥550 · 4p ¥1,050",
           },
           {
             name: { en: "Chicken Tikka", ja: "チキンティッカ" },
-            price: "¥550 / ¥1,050",
-            description: {
-              en: "2p ¥550 · 4p ¥1,050 — fragrant tandoor-roasted chicken pieces",
-              ja: "2p ¥550／4p ¥1,050 — 香ばしい窯焼きチキン",
-            },
+            price: "2p ¥550 · 4p ¥1,050",
           },
           {
             name: { en: "Garlic Tikka", ja: "ガーリックティッカ" },
-            price: "¥600 / ¥1,100",
-            description: {
-              en: "2p ¥600 · 4p ¥1,100 — chicken tikka with aromatic garlic",
-              ja: "2p ¥600／4p ¥1,100 — ガーリックを効かせたチキンティッカ",
-            },
+            price: "2p ¥600 · 4p ¥1,100",
           },
           {
             name: { en: "Tandoori Tebamoto", ja: "タンドリー手羽元" },
-            price: "¥800",
-            description: {
-              en: "5p — spicy chicken drumsticks",
-              ja: "5p — スパイシーな手羽元",
-            },
+            price: "5p ¥800",
           },
           {
             name: { en: "Tandoori Prawn", ja: "タンドリー海老" },
-            price: "¥1,400",
-            description: {
-              en: "4p — marinated prawns roasted in the tandoor",
-              ja: "4p — マリネした海老を窯焼きに",
-            },
+            price: "4p ¥1,400",
           },
           {
             name: { en: "Fish Tikka", ja: "フィッシュティッカ" },
-            price: "¥700 / ¥1,350",
-            description: {
-              en: "2p ¥700 · 4p ¥1,350 — spiced fish roasted in the tandoor",
-              ja: "2p ¥700／4p ¥1,350 — スパイスをまとった白身魚の窯焼き",
-            },
+            price: "2p ¥700 · 4p ¥1,350",
           },
           {
             name: { en: "Paneer Tikka", ja: "パニールティッカ" },
-            price: "¥1,290",
-            description: {
-              en: "4p — Indian cottage cheese grilled with spices",
-              ja: "4p — インドのカッテージチーズをスパイス焼きに",
-            },
+            price: "4p ¥1,290",
           },
           {
             name: { en: "Mutton Chop", ja: "マトンチョップ" },
-            price: "¥1,790",
-            description: {
-              en: "4p — spiced mutton chops roasted on the bone",
-              ja: "4p — 骨付きマトンをスパイスでロースト",
-            },
+            price: "4p ¥1,790",
           },
           {
             name: { en: "Mushroom Tikka", ja: "マッシュルームティッカ" },
             price: "¥900",
-            description: {
-              en: "Tender mushrooms grilled with spices",
-              ja: "マッシュルームをスパイスと共に窯焼きに",
-            },
           },
           {
             name: { en: "Mix Tandoori Grill", ja: "ミックス タンドリー グリル" },
@@ -597,119 +503,70 @@ export const RESTAURANT_DATA: RestaurantData = {
       {
         id: "nan",
         name: { en: "Nan", ja: "ナン" },
-        note: {
-          en: "Baked to order in the tandoor and brought over hot.",
-          ja: "タンドール窯で焼きたてを熱々のままお持ちします。",
-        },
         image: {
           src: "/images/menu/cheese-naan.jpg",
           alt: "Cheese nan slices pulling apart with molten cheese",
           caption: {
-            en: "Cheese nan — the one everyone photographs",
-            ja: "チーズナン — つい写真を撮りたくなる一枚",
+            en: "Cheese nan",
+            ja: "チーズナン",
           },
         },
         items: [
           {
             name: { en: "Plain Nan", ja: "プレーンナン" },
             price: "¥390",
-            description: {
-              en: "Soft and fluffy, baked in the tandoor",
-              ja: "タンドールで焼いたふんわりナン",
-            },
           },
           {
             name: { en: "Butter Nan", ja: "バターナン" },
             price: "¥490",
-            description: { en: "Rich and buttery", ja: "バターの風味豊かに" },
           },
           {
             name: { en: "Cheese Nan", ja: "チーズナン" },
             price: "¥650",
             recommended: true,
             photo: "/images/menu/cheese-naan.jpg",
-            description: {
-              en: "Filled with plenty of melted cheese",
-              ja: "とろけるチーズをたっぷり包んで",
-            },
           },
           {
             name: { en: "Masala Kulcha", ja: "マサラクルチャ" },
             price: "¥650",
-            description: {
-              en: "Indian bread stuffed with spiced filling",
-              ja: "スパイス餡を包んだインドのパン",
-            },
           },
           {
             name: { en: "Garlic Nan", ja: "ガーリックナン" },
             price: "¥470",
-            description: {
-              en: "Topped with aromatic garlic",
-              ja: "香ばしいガーリックをのせて",
-            },
           },
           {
             name: { en: "Sesame Nan", ja: "ゴマナン" },
             price: "¥470",
-            description: {
-              en: "Topped with fragrant sesame seeds",
-              ja: "香り高いゴマをまぶして",
-            },
           },
           {
             name: { en: "Honey Nan", ja: "ハニーナン" },
             price: "¥490",
-            description: {
-              en: "Drizzled with plenty of honey",
-              ja: "はちみつをたっぷりかけて",
-            },
           },
           {
             name: { en: "Basil Nan", ja: "バジルナン" },
             price: "¥490",
-            description: {
-              en: "A refreshing basil aroma",
-              ja: "爽やかなバジルの香り",
-            },
           },
           {
             name: { en: "Honey Cheese Nan", ja: "ハニーチーズナン" },
             price: "¥700",
-            description: {
-              en: "Cheese-filled, finished with honey — sweet and savory",
-              ja: "チーズ入りにはちみつをかけて、甘じょっぱく",
-            },
           },
           {
             name: { en: "Coconut Nan", ja: "ココナッツナン" },
             price: "¥700",
-            description: {
-              en: "Sweet and fragrant with coconut",
-              ja: "ココナッツの甘い香り",
-            },
           },
           {
             name: { en: "Chocolate Nan", ja: "チョコナン" },
             price: "¥750",
-            description: {
-              en: "Sweet nan filled with chocolate",
-              ja: "チョコレートを包んだ甘いナン",
-            },
           },
           {
             name: { en: "Sweet Red Bean Nan", ja: "あんこナン" },
             price: "¥750",
-            description: {
-              en: "Filled with red bean paste",
-              ja: "あんこをたっぷり包んで",
-            },
           },
           {
             name: { en: "Roti", ja: "ロティ" },
             price: "¥200",
             description: {
-              en: "Indian whole wheat flatbread",
+              en: "Whole wheat flatbread",
               ja: "インドの全粒粉フラットブレッド",
             },
           },
@@ -717,8 +574,8 @@ export const RESTAURANT_DATA: RestaurantData = {
             name: { en: "Paratha", ja: "プランタ" },
             price: "¥350",
             description: {
-              en: "Layered, flaky whole wheat bread",
-              ja: "層になったサクサクの全粒粉パン",
+              en: "Layered and flaky",
+              ja: "サクサクの層仕立て",
             },
           },
         ],
@@ -726,55 +583,34 @@ export const RESTAURANT_DATA: RestaurantData = {
       {
         id: "rice",
         name: { en: "Rice & Biryani", ja: "ライス＆ビリヤニ" },
-        note: {
-          en: "Fried rice can be upgraded to basmati for ¥100.",
-          ja: "フライドライスは＋¥100でバスマティライスに変更できます。",
-        },
         image: {
           src: "/images/menu/biryani-raita.jpg",
           alt: "Biryani topped with egg, almonds and red onion beside a bowl of raita",
           caption: {
-            en: "Biryani, layered and steamed, with raita alongside",
-            ja: "重ねて炊き上げたビリヤニ、ライタ添え",
+            en: "Biryani with raita",
+            ja: "ビリヤニ、ライタ添え",
           },
         },
         items: [
           {
             name: { en: "Rice", ja: "ライス" },
             price: "¥400",
-            description: { en: "Steamed Japanese rice", ja: "日本米のライス" },
           },
           {
             name: { en: "Basmati Rice", ja: "バスマティライス" },
             price: "¥600",
-            description: {
-              en: "Fragrant Indian basmati",
-              ja: "香り高いインドのバスマティ米",
-            },
           },
           {
             name: { en: "Saffron Rice", ja: "サフランライス" },
             price: "¥825",
-            description: {
-              en: "Infused with saffron aroma and color",
-              ja: "サフランの香りと彩りを移して",
-            },
           },
           {
             name: { en: "Garlic Rice", ja: "ガーリックライス" },
             price: "¥780",
-            description: {
-              en: "Flavored with aromatic garlic",
-              ja: "ガーリックを効かせて",
-            },
           },
           {
             name: { en: "Egg Fried Rice", ja: "エッグフライドライス" },
             price: "¥850",
-            description: {
-              en: "Fried rice with egg and vegetables",
-              ja: "卵と野菜のフライドライス",
-            },
           },
           {
             name: { en: "Gapao Rice", ja: "ガパオライス" },
@@ -790,33 +626,29 @@ export const RESTAURANT_DATA: RestaurantData = {
             recommended: true,
             photo: "/images/menu/biryani-platter.jpg",
             description: {
-              en: "Spiced rice with chicken, served with raita",
-              ja: "チキンのスパイスライス、ライタ添え",
+              en: "Served with raita",
+              ja: "ライタ添え",
             },
           },
           {
             name: { en: "Mutton Biryani", ja: "マトンビリヤニ" },
             price: "¥1,450",
             description: {
-              en: "Spiced rice with mutton, served with raita",
-              ja: "マトンのスパイスライス、ライタ添え",
+              en: "Served with raita",
+              ja: "ライタ添え",
             },
           },
           {
             name: { en: "Prawn Biryani", ja: "海老ビリヤニ" },
             price: "¥1,550",
             description: {
-              en: "Spiced rice with prawns, served with raita",
-              ja: "海老のスパイスライス、ライタ添え",
+              en: "Served with raita",
+              ja: "ライタ添え",
             },
           },
           {
             name: { en: "Prawn Fried Rice", ja: "海老チャーハン" },
             price: "¥1,250",
-            description: {
-              en: "Fried rice with tender prawns",
-              ja: "ぷりぷり海老のチャーハン",
-            },
           },
           {
             name: { en: "Vegetable Fried Rice", ja: "ベジタブル フライドライス" },
@@ -847,10 +679,6 @@ export const RESTAURANT_DATA: RestaurantData = {
       {
         id: "nepali",
         name: { en: "Nepali Street Food", ja: "ネパール屋台料理" },
-        note: {
-          en: "Kathmandu snack-cart classics — tangy, crunchy, made to share.",
-          ja: "カトマンズの屋台の定番。酸味と食感を、みんなでつまんで。",
-        },
         items: [
           {
             name: { en: "Pani Puri (8 pcs)", ja: "パニプリ（8個）" },
@@ -886,43 +714,23 @@ export const RESTAURANT_DATA: RestaurantData = {
           {
             name: { en: "Tomato Soup", ja: "トマトスープ" },
             price: "¥600",
-            description: {
-              en: "Rich, sweet and tangy ripe tomatoes",
-              ja: "完熟トマトの甘みと酸味",
-            },
           },
           {
             name: { en: "Chicken Soup", ja: "チキンスープ" },
             price: "¥600",
             recommended: true,
-            description: {
-              en: "Warm soup rich in chicken flavor",
-              ja: "鶏の旨みたっぷりの温かいスープ",
-            },
           },
           {
             name: { en: "Vegetable Soup", ja: "ベジタブルスープ" },
             price: "¥550",
-            description: {
-              en: "Light and comforting, with fresh vegetables",
-              ja: "野菜たっぷり、やさしい味わい",
-            },
           },
           {
             name: { en: "Corn Soup", ja: "コーンスープ" },
             price: "¥600",
-            description: {
-              en: "The gentle sweetness of sweet corn",
-              ja: "スイートコーンのやさしい甘み",
-            },
           },
           {
             name: { en: "Mushroom Soup", ja: "マッシュルームスープ" },
             price: "¥600",
-            description: {
-              en: "Aromatic and rich with mushrooms",
-              ja: "マッシュルームの香りとコク",
-            },
           },
           {
             name: { en: "Tom Yum Kung Soup", ja: "トムヤムクンスープ" },
@@ -935,34 +743,18 @@ export const RESTAURANT_DATA: RestaurantData = {
           {
             name: { en: "Edamame", ja: "枝豆" },
             price: "¥500",
-            description: {
-              en: "Lightly salted boiled green soybeans",
-              ja: "塩ゆでの枝豆",
-            },
           },
           {
             name: { en: "Garlic Stir-fried Edamame", ja: "枝豆ガーリック炒め" },
             price: "¥450",
-            description: {
-              en: "Edamame stir-fried with aromatic garlic",
-              ja: "枝豆を香ばしいガーリックで炒めて",
-            },
           },
           {
             name: { en: "Chicken Chili", ja: "チキンチリ" },
             price: "¥1,050",
-            description: {
-              en: "Stir-fried chicken in a spicy chili sauce",
-              ja: "スパイシーなチリソースで炒めたチキン",
-            },
           },
           {
             name: { en: "Prawn Chili", ja: "海老チリ" },
             price: "¥1,150",
-            description: {
-              en: "Stir-fried prawns in a tangy chili sauce",
-              ja: "酸味の効いたチリソースの海老炒め",
-            },
           },
         ],
       },
@@ -973,8 +765,8 @@ export const RESTAURANT_DATA: RestaurantData = {
           src: "/images/menu/fresh-salad.jpg",
           alt: "Garden salad with dressing, corn and cucumber",
           caption: {
-            en: "Crisp, cold, and a good foil for the spice",
-            ja: "冷たくシャキッと。辛さの箸休めに",
+            en: "Fresh green salad",
+            ja: "グリーンサラダ",
           },
         },
         items: [
@@ -982,15 +774,14 @@ export const RESTAURANT_DATA: RestaurantData = {
             name: { en: "Green Salad", ja: "グリーンサラダ" },
             price: "¥500",
             photo: "/images/menu/fresh-salad.jpg",
-            description: { en: "Fresh vegetable salad", ja: "新鮮野菜のサラダ" },
           },
           {
             name: { en: "Chicken Salad", ja: "チキンサラダ" },
             price: "¥650",
             recommended: true,
             description: {
-              en: "Fresh vegetables with tandoori chicken",
-              ja: "タンドリーチキンをのせた野菜サラダ",
+              en: "With tandoori chicken",
+              ja: "タンドリーチキンのせ",
             },
           },
           {
@@ -1005,81 +796,53 @@ export const RESTAURANT_DATA: RestaurantData = {
             name: { en: "Chana Salad", ja: "チャナサラダ" },
             price: "¥700",
             description: {
-              en: "Fresh vegetables with chickpeas",
-              ja: "ひよこ豆入りの野菜サラダ",
+              en: "With chickpeas",
+              ja: "ひよこ豆入り",
             },
           },
           {
             name: { en: "Asian Salad", ja: "アジアンサラダ" },
             price: "¥750",
             description: {
-              en: "Fresh vegetables with tuna",
-              ja: "ツナ入りの野菜サラダ",
+              en: "With tuna",
+              ja: "ツナ入り",
             },
           },
           {
             name: { en: "Seafood Salad", ja: "シーフードサラダ" },
             price: "¥750",
-            description: {
-              en: "Fresh vegetables with seafood",
-              ja: "魚介たっぷりの野菜サラダ",
-            },
           },
           {
             name: { en: "Avocado Salad", ja: "アボカドサラダ" },
             price: "¥850",
-            description: {
-              en: "Creamy avocado with fresh vegetables",
-              ja: "クリーミーなアボカドと新鮮野菜",
-            },
           },
           {
             name: { en: "Indian Green Salad", ja: "インディアン グリーンサラダ" },
             price: "¥850",
-            description: {
-              en: "Leafy greens with Indian-style spiced dressing",
-              ja: "インド風スパイスドレッシングの葉物サラダ",
-            },
           },
           {
             name: { en: "Peanut Salad", ja: "ピーナッツサラダ" },
             price: "¥500",
-            description: {
-              en: "Crunchy peanuts with fresh vegetables",
-              ja: "カリッとピーナッツと新鮮野菜",
-            },
           },
           {
             name: { en: "Tomato Salad", ja: "トマトサラダ" },
             price: "¥500",
-            description: {
-              en: "The natural sweetness of ripe tomatoes",
-              ja: "完熟トマトの自然な甘み",
-            },
           },
           {
             name: { en: "Sliced Red Onion Salad", ja: "スライスレッド オニオンサラダ" },
             price: "¥450",
-            description: {
-              en: "Red onions, sharp and refreshing",
-              ja: "赤玉ねぎの爽やかな辛み",
-            },
           },
         ],
       },
       {
         id: "sweets",
         name: { en: "Dessert & Smoothies", ja: "デザート＆スムージー" },
-        note: {
-          en: "Smoothies: black sesame topping +¥100 · soy or almond milk base +¥100.",
-          ja: "スムージー：黒ごまトッピング＋¥100・豆乳／アーモンドミルク変更＋¥100。",
-        },
         image: {
           src: "/images/menu/banana-lassi.jpg",
           alt: "Thick banana smoothie in a tall glass",
           caption: {
-            en: "Blended fresh, never from a mix",
-            ja: "その場でブレンド、作り置きなし",
+            en: "Banana smoothie, blended fresh",
+            ja: "バナナスムージー",
           },
         },
         items: [
@@ -1112,10 +875,6 @@ export const RESTAURANT_DATA: RestaurantData = {
             price: "¥700",
             recommended: true,
             photo: "/images/menu/banana-lassi.jpg",
-            description: {
-              en: "Whole bananas, blended thick",
-              ja: "バナナをまるごと、濃厚に",
-            },
           },
           {
             name: { en: "Apple Smoothie", ja: "アップル スムージー" },
@@ -1145,10 +904,6 @@ export const RESTAURANT_DATA: RestaurantData = {
       {
         id: "drinks",
         name: { en: "Drinks & Bar", ja: "ドリンク＆バー" },
-        note: {
-          en: "Dinner sets include a soft drink — pick any lassi, juice, tea, coffee, cola or Calpis.",
-          ja: "ディナーセットのソフトドリンクは、ラッシー・ジュース・お茶・コーヒー・コーラ・カルピスからお選びいただけます。",
-        },
         image: {
           src: "/images/menu/sweet-lassi.jpg",
           alt: "Frothy white lassi in a tall glass",
@@ -1177,10 +932,6 @@ export const RESTAURANT_DATA: RestaurantData = {
           {
             name: { en: "Cobra Beer", ja: "コブラビール" },
             price: "¥750",
-            description: {
-              en: "India's smooth, easy-drinking lager",
-              ja: "インドの飲みやすいラガー",
-            },
           },
           {
             name: { en: "Kyoto Craft Beer", ja: "京都クラフトビール" },

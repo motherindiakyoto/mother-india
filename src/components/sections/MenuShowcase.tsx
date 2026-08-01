@@ -104,7 +104,7 @@ function MenuRow({ item }: { item: PricedItem }) {
 
 export default function MenuShowcase() {
   const { fullMenu, metadata } = RESTAURANT_DATA;
-  const { sections, curryChoices } = fullMenu;
+  const { sections } = fullMenu;
   const { t } = useLang();
   const [activeId, setActiveId] = useState(sections[0].id);
 
@@ -152,11 +152,12 @@ export default function MenuShowcase() {
       </MotionSlider>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Category tabs with sliding indicator */}
+        {/* Category tabs — one swipeable row on phones, wrapped and centred above lg.
+            Negative margins let the row bleed to the screen edge so it reads as scrollable. */}
         <div
           role="tablist"
           aria-label={t(UI.menu.title)}
-          className="mb-10 flex flex-wrap justify-center gap-2"
+          className="scroll-row -mx-4 mb-8 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 lg:mx-0 lg:mb-10 lg:flex-wrap lg:justify-center lg:overflow-visible lg:px-0"
         >
           {sections.map((section) => {
             const isActive = section.id === activeId;
@@ -167,9 +168,17 @@ export default function MenuShowcase() {
                 aria-selected={isActive}
                 aria-controls="menu-panel"
                 type="button"
-                onClick={() => setActiveId(section.id)}
+                onClick={(event) => {
+                  setActiveId(section.id);
+                  // Pull the tapped tab into view on the phone-width scroll row.
+                  event.currentTarget.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "center",
+                  });
+                }}
                 className={cn(
-                  "relative cursor-pointer rounded-full px-4 py-2.5 text-sm font-medium transition-colors duration-200 sm:px-5",
+                  "relative min-h-11 shrink-0 snap-start cursor-pointer whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-medium transition-colors duration-200 sm:px-5",
                   isActive ? "text-obsidian" : "text-stone-400 hover:text-cream"
                 )}
               >
@@ -204,7 +213,8 @@ export default function MenuShowcase() {
             {/* Section feature image */}
             {active.image && (
               <figure className="overflow-hidden rounded-3xl border border-white/10 bg-obsidian-card lg:sticky lg:top-24">
-                <div className="relative aspect-[4/3]">
+                {/* Shorter crop on phones so the dish list starts higher up. */}
+                <div className="relative aspect-video sm:aspect-4/3">
                   <Image
                     src={active.image.src}
                     alt={active.image.alt}
@@ -213,33 +223,13 @@ export default function MenuShowcase() {
                     className="object-cover"
                   />
                 </div>
-                <figcaption className="px-5 py-4 text-xs leading-relaxed text-stone-400">
+                <figcaption className="px-4 py-3 text-xs leading-relaxed text-stone-400 sm:px-5 sm:py-4">
                   {t(active.image.caption)}
                 </figcaption>
               </figure>
             )}
 
             <div>
-              {active.note && (
-                <p className="mb-6 rounded-2xl border border-saffron/20 bg-saffron/5 px-5 py-3.5 text-xs leading-relaxed text-stone-300 sm:text-sm">
-                  {t(active.note)}
-                </p>
-              )}
-
-              {/* Curry chooser for dinner sets */}
-              {active.id === "sets" && (
-                <div className="mb-6 flex flex-wrap gap-2">
-                  {curryChoices.map((choice) => (
-                    <span
-                      key={choice.en}
-                      className="rounded-full border border-emerald-deep/40 bg-emerald-deep/10 px-3 py-1 text-[11px] font-medium text-emerald-soft"
-                    >
-                      {t(choice)}
-                    </span>
-                  ))}
-                </div>
-              )}
-
               <div className="grid gap-x-10 md:grid-cols-2">
                 {columns.map((columnItems, columnIndex) => (
                   <ul key={columnIndex}>

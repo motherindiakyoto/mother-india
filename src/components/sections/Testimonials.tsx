@@ -13,6 +13,7 @@ import { RESTAURANT_DATA, type Testimonial } from "@/data/restaurantData";
 import { UI } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
 import SectionHeading from "@/components/SectionHeading";
+import { cn } from "@/lib/utils";
 
 const MARQUEE_SPEED = 38; // px per second
 
@@ -38,10 +39,21 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
+function TestimonialCard({
+  testimonial,
+  className,
+}: {
+  testimonial: Testimonial;
+  className?: string;
+}) {
   const { t } = useLang();
   return (
-    <figure className="relative flex h-full w-[min(420px,82vw)] shrink-0 flex-col gap-4 overflow-hidden rounded-2xl border border-white/8 bg-obsidian-card p-7">
+    <figure
+      className={cn(
+        "relative flex h-full w-[min(420px,82vw)] shrink-0 flex-col gap-4 overflow-hidden rounded-2xl border border-white/8 bg-obsidian-card p-6 sm:p-7",
+        className
+      )}
+    >
       <Quote
         aria-hidden="true"
         className="absolute -right-2 -top-2 size-20 text-saffron/10"
@@ -128,7 +140,21 @@ export default function Testimonials() {
           ))}
         </div>
       ) : (
-        <Marquee testimonials={testimonials} />
+        <>
+          {/* Phones read at their own pace — a moving marquee can't be paused by touch. */}
+          <div className="scroll-row flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:hidden">
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard
+                key={index}
+                testimonial={testimonial}
+                className="snap-center"
+              />
+            ))}
+          </div>
+          <div className="hidden sm:block">
+            <Marquee testimonials={testimonials} />
+          </div>
+        </>
       )}
     </section>
   );

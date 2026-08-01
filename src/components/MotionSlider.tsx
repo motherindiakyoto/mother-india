@@ -12,6 +12,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+const arrowClass =
+  "pointer-events-none flex size-11 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-obsidian/70 text-cream opacity-0 backdrop-blur-md transition-all duration-200 hover:border-saffron/60 hover:text-saffron-glow focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover/slider:pointer-events-auto group-hover/slider:opacity-100";
+
 interface MotionSliderProps {
   /** Slide elements — rendered twice for a seamless infinite loop. */
   children: React.ReactNode[];
@@ -88,7 +91,7 @@ export default function MotionSlider({
       <div
         aria-label={label}
         className={cn(
-          "flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [&>*]:snap-start",
+          "scroll-row flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-4 *:snap-start",
           className
         )}
       >
@@ -131,13 +134,14 @@ export default function MotionSlider({
         </motion.div>
       </div>
 
-      {/* Arrow controls */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center justify-between px-1 sm:px-2">
+      {/* Arrow controls — pointer-only. On touch the row is swiped directly, and
+          leaving invisible buttons tappable would swallow taps on the cards. */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-between px-1 [@media(hover:hover)]:flex sm:px-2">
         <button
           type="button"
           aria-label="Previous"
           onClick={() => nudge(1)}
-          className="pointer-events-auto flex size-11 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-obsidian/70 text-cream opacity-0 backdrop-blur-md transition-all duration-200 hover:border-saffron/60 hover:text-saffron-glow focus-visible:opacity-100 group-hover/slider:opacity-100"
+          className={arrowClass}
         >
           <ChevronLeft className="size-5" aria-hidden="true" />
         </button>
@@ -145,7 +149,7 @@ export default function MotionSlider({
           type="button"
           aria-label="Next"
           onClick={() => nudge(-1)}
-          className="pointer-events-auto flex size-11 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-obsidian/70 text-cream opacity-0 backdrop-blur-md transition-all duration-200 hover:border-saffron/60 hover:text-saffron-glow focus-visible:opacity-100 group-hover/slider:opacity-100"
+          className={arrowClass}
         >
           <ChevronRight className="size-5" aria-hidden="true" />
         </button>

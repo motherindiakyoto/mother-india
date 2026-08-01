@@ -30,6 +30,7 @@ export const UI = {
       en: "4F Hijikata Bldg. · Nakagyo Ward",
       ja: "ヒジカタビル4F・中京区",
     },
+    payments: { en: "Cards & cash", ja: "カード・現金OK" },
     scrollLabel: { en: "Scroll to our story", ja: "ストーリーへスクロール" },
     daysLine: { en: "Monday - Sunday", ja: "月曜〜日曜" },
   },

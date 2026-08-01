@@ -23,6 +23,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keep text at the author's size when a phone is rotated to landscape. */
+  -webkit-text-size-adjust: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -36,11 +38,34 @@ body {
   color: var(--color-cream);
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
+  /* Decorative glows and off-canvas collage pieces must never let the page
+     pan sideways on a phone. `clip` keeps sticky/position: fixed working. */
+  overflow-x: clip;
+}
+
+/* Cuts the ~300ms tap delay without disabling pinch-zoom. */
+a,
+button,
+[role="button"],
+[role="tab"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Anchored sections clear the fixed glassmorphic navbar */
 section[id] {
   scroll-margin-top: 5.5rem;
+}
+
+/* Swipe rows: hide the scrollbar chrome, keep momentum scrolling. */
+.scroll-row {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.scroll-row::-webkit-scrollbar {
+  display: none;
 }
 
 ::selection {

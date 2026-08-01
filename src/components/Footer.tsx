@@ -195,7 +195,7 @@ export default function Footer() {
               loading="lazy"
               allowFullScreen
               referrerPolicy="no-referrer-when-downgrade"
-              className="h-full min-h-[380px] w-full border-0 lg:min-h-full"
+              className="h-full min-h-70 w-full border-0 sm:min-h-95 lg:min-h-full"
             />
           </motion.div>
         </div>
@@ -203,7 +203,8 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/5">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 py-10 sm:px-6 md:flex-row lg:px-8">
+        {/* Extra bottom room on phones so the floating call button never covers the credits. */}
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 pb-[max(6rem,calc(env(safe-area-inset-bottom)+5.5rem))] pt-10 sm:px-6 md:flex-row lg:px-8 lg:pb-10">
           <div className="text-center md:text-left">
             <p className="font-display text-lg text-cream">{metadata.brandName}</p>
             <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.32em] text-saffron-bright">

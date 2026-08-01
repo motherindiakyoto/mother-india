@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 
 import { RESTAURANT_DATA } from "@/data/restaurantData";
+import { SITE_URL, buildRestaurantJsonLd, buildWebSiteJsonLd } from "@/lib/seo";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -39,26 +40,70 @@ const notoSerifJp = Noto_Serif_JP({
 
 const { metadata: brand } = RESTAURANT_DATA;
 
+// og:image / twitter:image come from `opengraph-image.jpg` and
+// `twitter-image.jpg` in this folder — Next resolves their URL, dimensions
+// and alt text (from the sibling `.alt.txt` files) automatically.
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: `${brand.brandName} | ${brand.subTitle}`,
+    // Leads with the search intent people actually type: cuisine + city.
+    default: `${brand.brandName} — Indian & Nepali Restaurant in Kyoto`,
     template: `%s | ${brand.brandName} Kyoto`,
   },
   description: brand.description.en,
   keywords: brand.seoKeywords,
+  applicationName: brand.legalName,
+  authors: [{ name: brand.legalName }],
+  creator: brand.legalName,
+  publisher: brand.legalName,
+  alternates: {
+    canonical: "/",
+    languages: {
+      en: "/",
+      ja: "/",
+      "x-default": "/",
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
-    title: `${brand.brandName} | ${brand.subTitle}`,
-    description: brand.tagline.en,
+    title: `${brand.brandName} — Indian & Nepali Restaurant in Kyoto`,
+    description: brand.description.en,
+    url: SITE_URL,
     type: "website",
     locale: "en_US",
     alternateLocale: "ja_JP",
     siteName: brand.legalName,
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${brand.brandName} — Indian & Nepali Restaurant in Kyoto`,
+    description: brand.description.en,
+  },
+  category: "restaurant",
+  formatDetection: { telephone: true, address: true },
 };
 
 export const viewport: Viewport = {
   themeColor: "#0F0F11",
   colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
+  // Zoom stays available — never pinned to 1 — up to 5x.
+  maximumScale: 5,
+  userScalable: true,
+  // Lets the layout paint edge to edge so `env(safe-area-inset-*)` reports
+  // real values around the notch and home indicator.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -72,6 +117,16 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} ${notoSansJp.variable} ${notoSerifJp.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-obsidian text-cream">
+        {/* Rich-result markup for Google Search & Maps. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              buildRestaurantJsonLd(),
+              buildWebSiteJsonLd(),
+            ]),
+          }}
+        />
         <LanguageProvider>
           <ScrollManager />
           <Navbar />

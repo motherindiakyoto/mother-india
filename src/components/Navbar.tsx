@@ -40,7 +40,7 @@ function LangToggle({ className }: { className?: string }) {
           aria-pressed={lang === code}
           onClick={() => setLang(code)}
           className={cn(
-            "relative cursor-pointer rounded-full px-2.5 py-1 text-xs font-semibold transition-colors",
+            "relative cursor-pointer whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors",
             lang === code
               ? "text-obsidian"
               : "text-stone-400 hover:text-cream"
@@ -64,6 +64,7 @@ export default function Navbar() {
   const { metadata, contact } = RESTAURANT_DATA;
   const { lang, t } = useLang();
   const [scrolled, setScrolled] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   // Computed post-mount so the visit date (tomorrow) never causes a hydration mismatch.
@@ -78,6 +79,7 @@ export default function Navbar() {
 
   useMotionValueEvent(scrollY, "change", (y) => {
     setScrolled(y > 16);
+    setPastHero(y > 420);
     if (y < 160) setActiveId(null);
   });
 
@@ -112,7 +114,7 @@ export default function Navbar() {
     <>
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300",
+          "fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition-[background-color,border-color,box-shadow] duration-300",
           scrolled || open
             ? "border-b border-white/10 bg-obsidian/75 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.6)] backdrop-blur-xl"
             : "border-b border-transparent bg-transparent"
@@ -135,7 +137,7 @@ export default function Navbar() {
             <span className="block font-display text-xl leading-none text-cream transition-colors group-hover:text-saffron-glow">
               {metadata.brandName}
             </span>
-            <span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.32em] text-saffron-bright">
+            <span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.18em] text-saffron-bright sm:tracking-[0.32em]">
               {t(UI.nav.brandSub)}
             </span>
           </a>
@@ -220,7 +222,8 @@ export default function Navbar() {
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="overflow-hidden border-t border-white/10 bg-obsidian/95 backdrop-blur-xl lg:hidden"
             >
-              <ul className="space-y-1 px-4 py-5">
+              {/* Scrolls internally so the sheet still fits in landscape. */}
+              <ul className="max-h-[calc(100dvh-4.5rem)] space-y-1 overflow-y-auto px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
                 {NAV_IDS.map((id, index) => (
                   <motion.li
                     key={id}
@@ -277,20 +280,27 @@ export default function Navbar() {
         </AnimatePresence>
       </header>
 
-      {/* Floating quick-action call utility (mobile) */}
-      <motion.a
-        href={contact.phone.dial}
-        aria-label={`Call ${metadata.brandName} now`}
-        initial={{ opacity: 0, scale: 0.6 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.2, type: "spring", stiffness: 260, damping: 20 }}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
-        className="fixed bottom-5 right-5 z-40 flex size-14 items-center justify-center rounded-full bg-saffron text-obsidian shadow-[0_8px_32px_-8px_rgba(217,119,6,0.8)] lg:hidden"
-      >
-        <span className="absolute inset-0 animate-ping rounded-full bg-saffron/40 motion-reduce:hidden" />
-        <Phone className="relative size-6" aria-hidden="true" />
-      </motion.a>
+      {/* Floating quick-action call utility (mobile). Appears only once the hero —
+          which carries its own call button — has scrolled away. */}
+      <AnimatePresence>
+        {pastHero && !open && (
+          <motion.a
+            href={contact.phone.dial}
+            aria-label={`Call ${metadata.brandName} now`}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.6 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            whileTap={{ scale: 0.92 }}
+            style={{
+              bottom: "max(1.25rem, calc(env(safe-area-inset-bottom) + 0.5rem))",
+            }}
+            className="fixed right-4 z-40 flex size-14 items-center justify-center rounded-full bg-saffron text-obsidian shadow-[0_8px_32px_-8px_rgba(217,119,6,0.8)] sm:right-5 lg:hidden"
+          >
+            <Phone className="relative size-6" aria-hidden="true" />
+          </motion.a>
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -10,10 +10,11 @@ export default function Home() {
     <main id="top" className="flex-1">
       <Hero />
       <Story />
-      <Amenities />
       <MenuShowcase />
       <Gallery />
       <Testimonials />
+      {/* Practical details sit last, right above the Visit block in the footer. */}
+      <Amenities />
     </main>
   );
 }

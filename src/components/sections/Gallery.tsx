@@ -43,7 +43,7 @@ function FilmCard({
         src={photo.src}
         alt={photo.alt}
         fill
-        sizes="460px"
+        sizes="(min-width: 768px) 460px, 78vw"
         draggable={false}
         className="pointer-events-none select-none object-cover transition-transform duration-500 ease-out group-hover:scale-105"
       />
@@ -98,18 +98,6 @@ function PinnedFilmstrip({ photos }: { photos: GalleryImage[] }) {
       const h = window.innerHeight + r;
       // Tighter cap: avoid taller than 2x viewport + 400px
       const capped = Math.max(window.innerHeight, Math.min(h, window.innerHeight * 2 + 400));
-
-      // eslint-disable-next-line no-console
-      console.log("gallery: measure", {
-        trackScrollWidth: track.scrollWidth,
-        trackClientWidth: track.clientWidth,
-        padLeft,
-        visible,
-        visibleClamped,
-        range: r,
-        sectionHeight: h,
-        capped,
-      });
 
       setSectionHeight(capped);
     };
@@ -199,13 +187,13 @@ function SwipeRow({ photos }: { photos: GalleryImage[] }) {
           description={t(UI.gallery.swipeDescription)}
         />
       </div>
-      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="scroll-row flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2">
         {photos.map((photo, index) => (
           <FilmCard
             key={photo.src}
             photo={photo}
             index={index}
-            className="h-[320px] w-[min(78vw,320px)] snap-center"
+            className="h-80 w-[min(78vw,320px)] snap-center"
           />
         ))}
       </div>

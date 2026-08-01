@@ -27,18 +27,18 @@ export default function SectionHeading({
       viewport={{ once: true, amount: 0.05 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "mb-12 max-w-2xl md:mb-16",
+        "mb-10 max-w-2xl sm:mb-12 md:mb-16",
         align === "center" ? "mx-auto text-center" : "text-left"
       )}
     >
-      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-saffron-bright">
+      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-saffron-bright sm:text-xs sm:tracking-[0.35em]">
         {eyebrow}
       </p>
-      <h2 className="font-display text-3xl leading-tight text-cream sm:text-4xl md:text-5xl">
+      <h2 className="font-display text-[clamp(1.75rem,7vw,2.25rem)] leading-tight text-cream sm:text-4xl md:text-5xl">
         {title}
       </h2>
       {description && (
-        <p className="mt-4 text-base leading-relaxed text-stone-400">
+        <p className="mt-4 text-sm leading-relaxed text-stone-400 sm:text-base">
           {description}
         </p>
       )}

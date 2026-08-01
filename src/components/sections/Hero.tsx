@@ -8,7 +8,14 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { ChevronDown, Clock, MapPin, Phone, UtensilsCrossed } from "lucide-react";
+import {
+  ChevronDown,
+  Clock,
+  CreditCard,
+  MapPin,
+  Phone,
+  UtensilsCrossed,
+} from "lucide-react";
 
 import { RESTAURANT_DATA } from "@/data/restaurantData";
 import { UI } from "@/data/i18n";
@@ -19,7 +26,7 @@ import { cn, scrollToSection } from "@/lib/utils";
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
 export default function Hero() {
-  const { metadata, contact } = RESTAURANT_DATA;
+  const { metadata, contact, paymentMethods } = RESTAURANT_DATA;
   const { lang, t } = useLang();
   const reduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
@@ -44,7 +51,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       aria-label="Welcome"
-      className="relative flex min-h-dvh items-center overflow-hidden pt-24 pb-20"
+      className="relative flex min-h-dvh items-center overflow-hidden pb-24 pt-28 sm:pb-20 sm:pt-24"
     >
       {/* Parallax photo background with obsidian glow overlays */}
       <motion.div
@@ -75,7 +82,7 @@ export default function Hero() {
             initial={reduceMotion ? false : { opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: easeOut }}
-            className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-emerald-deep/50 bg-emerald-deep/10 px-4 py-2 text-xs font-medium text-emerald-soft backdrop-blur-sm sm:text-sm"
+            className="mb-6 inline-flex max-w-full items-center gap-2.5 rounded-full border border-emerald-deep/50 bg-emerald-deep/10 px-4 py-2 text-xs font-medium text-emerald-soft backdrop-blur-sm sm:mb-8 sm:text-sm"
           >
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-soft/60 motion-reduce:hidden" />
@@ -90,7 +97,7 @@ export default function Hero() {
             initial={reduceMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.6, ease: easeOut }}
-            className="mb-4 text-xs font-semibold uppercase tracking-[0.45em] text-saffron-bright sm:text-sm"
+            className="mb-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-saffron-bright sm:text-sm sm:tracking-[0.45em]"
           >
             {metadata.subTitle}
           </motion.p>
@@ -99,7 +106,7 @@ export default function Hero() {
             initial={reduceMotion ? false : { opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.7, ease: easeOut }}
-            className="font-display text-5xl leading-[1.05] text-cream sm:text-7xl md:text-8xl"
+            className="font-display text-[clamp(2.75rem,13vw,4rem)] leading-[1.05] text-cream sm:text-7xl md:text-8xl"
           >
             Mother{" "}
             <span className="bg-gradient-to-r from-saffron-glow via-saffron-bright to-saffron bg-clip-text text-transparent">
@@ -110,7 +117,7 @@ export default function Hero() {
           {/* Tagline — word/character clip reveal */}
           <h2
             key={lang}
-            className="mx-auto mt-6 max-w-3xl font-display text-xl italic leading-relaxed text-stone-200 sm:text-2xl md:text-3xl"
+            className="mx-auto mt-4 max-w-3xl font-display text-lg italic leading-relaxed text-stone-200 sm:mt-6 sm:text-2xl md:text-3xl"
           >
             {units.map((unit, index) => (
               <span
@@ -138,7 +145,7 @@ export default function Hero() {
             initial={reduceMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.05, duration: 0.6, ease: easeOut }}
-            className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-stone-400 sm:text-base"
+            className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-stone-400 sm:mt-6 sm:text-base"
           >
             {t(metadata.description)}
           </motion.p>
@@ -148,7 +155,7 @@ export default function Hero() {
             initial={reduceMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.25, duration: 0.6, ease: easeOut }}
-            className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+            className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row"
           >
             <motion.a
               href="#menu"
@@ -179,7 +186,7 @@ export default function Hero() {
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5, duration: 0.8 }}
-            className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-stone-500 sm:text-sm"
+            className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-stone-500 sm:mt-12 sm:gap-x-8 sm:gap-y-3 sm:text-sm"
           >
             <span className="flex items-center gap-2">
               <MapPin className="size-4 text-saffron-bright" aria-hidden="true" />
@@ -190,6 +197,27 @@ export default function Hero() {
               {t(hours.days)} · <span className="tabular-nums">{hours.time}</span>
             </span>
           </motion.div>
+
+          {/* One quiet line so overseas guests know payment is sorted before they come up. */}
+          <motion.p
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.6, duration: 0.8 }}
+            className="mx-auto mt-5 inline-flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-white/10 bg-white/3 px-4 py-2 text-[11px] text-stone-400 sm:mt-6 sm:text-xs"
+          >
+            <CreditCard
+              className="size-3.5 shrink-0 text-saffron-bright"
+              aria-hidden="true"
+            />
+            <span className="font-medium text-stone-300">
+              {t(UI.hero.payments)}
+            </span>
+            {/* The separator only reads as one when the line doesn't wrap. */}
+            <span aria-hidden="true" className="hidden text-stone-600 sm:inline">
+              ·
+            </span>
+            <span>{t(paymentMethods.cardBrands)}</span>
+          </motion.p>
         </div>
       </motion.div>
 

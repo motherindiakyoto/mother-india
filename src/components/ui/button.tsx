@@ -15,9 +15,10 @@ const buttonVariants = cva(
         ghost: "text-stone-300 hover:bg-white/5 hover:text-cream",
       },
       size: {
-        sm: "h-9 px-4 text-sm",
+        // Mobile keeps every control at the 44px touch minimum; desktop tightens up.
+        sm: "h-11 px-4 text-sm sm:h-9",
         md: "h-11 px-6 text-sm",
-        lg: "h-13 px-8 text-base",
+        lg: "h-12 px-6 text-base sm:h-13 sm:px-8",
       },
     },
     defaultVariants: {
