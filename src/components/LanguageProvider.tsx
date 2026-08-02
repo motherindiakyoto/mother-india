@@ -1,54 +1,32 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
-import type { L, Lang } from "@/data/i18n";
+import { langFromPath, type L, type Lang } from "@/data/i18n";
 
-interface LanguageContextValue {
-  lang: Lang;
-  setLang: (lang: Lang) => void;
-}
-
-const LanguageContext = createContext<LanguageContextValue>({
-  lang: "en",
-  setLang: () => {},
-});
-
-const STORAGE_KEY = "mi-lang";
-
+/**
+ * The active language is derived from the URL, not from state: `/` is English
+ * and `/ja` is Japanese. That keeps the language a server-rendered fact, so
+ * each locale is a real crawlable document rather than a client-side re-render
+ * of the same one. Switching languages is a navigation — see `LangToggle`.
+ */
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("en");
+  const lang = useLang().lang;
 
+  // The root layout can only emit one static `<html lang>`; keep the live DOM
+  // honest for screen readers and translation tools on the Japanese route.
   useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved === "en" || saved === "ja") {
-      setLangState(saved);
-      document.documentElement.lang = saved;
-    }
-  }, []);
+    document.documentElement.lang = lang;
+  }, [lang]);
 
-  const setLang = useCallback((next: Lang) => {
-    setLangState(next);
-    window.localStorage.setItem(STORAGE_KEY, next);
-    document.documentElement.lang = next;
-  }, []);
-
-  return (
-    <LanguageContext.Provider value={{ lang, setLang }}>
-      {children}
-    </LanguageContext.Provider>
-  );
+  return <>{children}</>;
 }
 
 /** Access the active language plus a `t` resolver for localized strings. */
 export function useLang() {
-  const { lang, setLang } = useContext(LanguageContext);
+  const pathname = usePathname();
+  const lang: Lang = langFromPath(pathname ?? "/");
   const t = useCallback((value: L) => value[lang], [lang]);
-  return { lang, setLang, t };
+  return { lang, t };
 }

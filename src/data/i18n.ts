@@ -11,6 +11,24 @@ export interface L {
   ja: string;
 }
 
+export const LANGS: readonly Lang[] = ["en", "ja"];
+
+/**
+ * Each language has its own URL — English at `/`, Japanese at `/ja` — rather
+ * than a client-side toggle over one page. A toggle leaves search engines with
+ * a single English document, which costs the site every Japanese query
+ * ("京都 インド料理" and friends) that its own neighbourhood searches with.
+ * Two crawlable URLs, cross-linked with hreflang, are what get both indexed.
+ */
+export function langPath(lang: Lang): string {
+  return lang === "ja" ? "/ja" : "/";
+}
+
+/** The language a pathname belongs to. Anything under `/ja` is Japanese. */
+export function langFromPath(pathname: string): Lang {
+  return pathname === "/ja" || pathname.startsWith("/ja/") ? "ja" : "en";
+}
+
 /** Shared UI strings used across multiple components. */
 export const UI = {
   nav: {
@@ -24,6 +42,13 @@ export const UI = {
     brandSub: { en: "Restaurant & Bar · Kyoto", ja: "レストラン＆バー・京都" },
   },
   hero: {
+    // Sits inside the <h1>. The big brand name alone says nothing about what
+    // we serve or where — this line is what makes the page's single most
+    // important heading match how people search for us.
+    h1Kicker: {
+      en: "Indian & Nepali Restaurant · Kyoto",
+      ja: "インド・ネパール料理 · 京都 中京区",
+    },
     openDaily: { en: "Open Daily", ja: "年中無休" },
     explore: { en: "Explore Our Menu", ja: "メニューを見る" },
     location: {
@@ -84,6 +109,17 @@ export const UI = {
     description: {
       en: "From diners who made it up to the fourth floor.",
       ja: "4階まで足を運んでくださったお客様より。",
+    },
+  },
+  faq: {
+    eyebrow: { en: "Before You Come", ja: "ご来店の前に" },
+    title: {
+      en: "Questions We're Asked Most",
+      ja: "よくいただくご質問",
+    },
+    description: {
+      en: "Hours, dietary requests, payment, and how to find the fourth floor.",
+      ja: "営業時間、食事制限のご相談、お支払い、4階への行き方について。",
     },
   },
   story: {

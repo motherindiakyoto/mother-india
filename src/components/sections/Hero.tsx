@@ -92,30 +92,32 @@ export default function Hero() {
             <span className="tabular-nums">{hours.time}</span>
           </motion.div>
 
-          {/* Brand title */}
-          <motion.p
-            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.6, ease: easeOut }}
-            className="mb-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-saffron-bright sm:text-sm sm:tracking-[0.45em]"
-          >
-            {metadata.subTitle}
-          </motion.p>
-
-          <motion.h1
-            initial={reduceMotion ? false : { opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.7, ease: easeOut }}
-            className="font-display text-[clamp(2.75rem,13vw,4rem)] leading-[1.05] text-cream sm:text-7xl md:text-8xl"
-          >
-            Mother{" "}
-            <span className="bg-gradient-to-r from-saffron-glow via-saffron-bright to-saffron bg-clip-text text-transparent">
-              India
-            </span>
-          </motion.h1>
+          {/* Brand title. The kicker sits inside the <h1> so the page's one
+              top-level heading names the cuisine and the city, not just us. */}
+          <h1 className="font-display text-[clamp(2.75rem,13vw,4rem)] leading-[1.05] text-cream sm:text-7xl md:text-8xl">
+            <motion.span
+              initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.6, ease: easeOut }}
+              className="mb-4 block text-[11px] font-sans font-semibold uppercase tracking-[0.28em] text-saffron-bright sm:text-sm sm:tracking-[0.45em]"
+            >
+              {t(UI.hero.h1Kicker)}
+            </motion.span>
+            <motion.span
+              initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.7, ease: easeOut }}
+              className="block"
+            >
+              Mother{" "}
+              <span className="bg-gradient-to-r from-saffron-glow via-saffron-bright to-saffron bg-clip-text text-transparent">
+                India
+              </span>
+            </motion.span>
+          </h1>
 
           {/* Tagline — word/character clip reveal */}
-          <h2
+          <p
             key={lang}
             className="mx-auto mt-4 max-w-3xl font-display text-lg italic leading-relaxed text-stone-200 sm:mt-6 sm:text-2xl md:text-3xl"
           >
@@ -139,7 +141,7 @@ export default function Hero() {
                 </motion.span>
               </span>
             ))}
-          </h2>
+          </p>
 
           <motion.p
             initial={reduceMotion ? false : { opacity: 0, y: 20 }}

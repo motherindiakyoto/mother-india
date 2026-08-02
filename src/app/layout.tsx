@@ -7,7 +7,7 @@ import {
 } from "next/font/google";
 
 import { RESTAURANT_DATA } from "@/data/restaurantData";
-import { SITE_URL, buildRestaurantJsonLd, buildWebSiteJsonLd } from "@/lib/seo";
+import { GEO, SITE_URL } from "@/lib/seo";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -56,14 +56,8 @@ export const metadata: Metadata = {
   authors: [{ name: brand.legalName }],
   creator: brand.legalName,
   publisher: brand.legalName,
-  alternates: {
-    canonical: "/",
-    languages: {
-      en: "/",
-      ja: "/",
-      "x-default": "/",
-    },
-  },
+  // Canonical and hreflang are per-locale — each page sets its own. Declaring
+  // them here would point every route at `/`.
   robots: {
     index: true,
     follow: true,
@@ -91,6 +85,14 @@ export const metadata: Metadata = {
   },
   category: "restaurant",
   formatDetection: { telephone: true, address: true },
+  // Coordinates as plain meta tags: still read by a number of local-search
+  // and map crawlers that never parse JSON-LD.
+  other: {
+    "geo.region": "JP-26",
+    "geo.placename": "Kyoto",
+    "geo.position": `${GEO.latitude};${GEO.longitude}`,
+    ICBM: `${GEO.latitude}, ${GEO.longitude}`,
+  },
 };
 
 export const viewport: Viewport = {
@@ -117,16 +119,7 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} ${notoSansJp.variable} ${notoSerifJp.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-obsidian text-cream">
-        {/* Rich-result markup for Google Search & Maps. */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              buildRestaurantJsonLd(),
-              buildWebSiteJsonLd(),
-            ]),
-          }}
-        />
+        {/* Rich-result markup is per-locale and lives in each page. */}
         <LanguageProvider>
           <ScrollManager />
           <Navbar />

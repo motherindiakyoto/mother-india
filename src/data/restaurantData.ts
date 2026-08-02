@@ -72,6 +72,18 @@ export interface ScheduleEntry {
   time: string;
 }
 
+/**
+ * A question guests actually ask, with an answer taken only from the facts
+ * already on this page — hours, floor, payment, spice, dietary handling.
+ * Rendered as visible copy *and* as `FAQPage` structured data, which is what
+ * search engines and assistants quote back for "is there Jain food in Kyoto"
+ * style questions. Never add an entry here that the page can't back up.
+ */
+export interface FaqItem {
+  question: L;
+  answer: L;
+}
+
 export interface RestaurantData {
   metadata: {
     brandName: string;
@@ -104,6 +116,7 @@ export interface RestaurantData {
   };
   gallery: GalleryImage[];
   testimonials: Testimonial[];
+  faqs: FaqItem[];
 }
 
 export const RESTAURANT_DATA: RestaurantData = {
@@ -1210,6 +1223,99 @@ export const RESTAURANT_DATA: RestaurantData = {
       context: {
         en: "Verified review",
         ja: "認証済みレビュー",
+      },
+    },
+  ],
+
+  faqs: [
+    {
+      question: {
+        en: "Where is Mother India in Kyoto, and how do I find it?",
+        ja: "マザーインディアは京都のどこにありますか？",
+      },
+      answer: {
+        en: "We're on the 4th floor of the Hijikata Building at 435-2 Ebisuchō, Nakagyo Ward, Kyoto 604-8005 — a few minutes' walk from the Kawaramachi and Sanjō area. Look for our signboard at street level and take the lift to 4F.",
+        ja: "京都市中京区恵比須町435-2 ヒジカタビル4F（〒604-8005）、河原町・三条エリアから徒歩数分です。通り沿いの看板を目印に、エレベーターで4階へお上がりください。",
+      },
+    },
+    {
+      question: {
+        en: "What are your opening hours?",
+        ja: "営業時間を教えてください。",
+      },
+      answer: {
+        en: "We're open every day of the week, 11:00 AM to 11:00 PM — lunch straight through to late dinner, with no closing day.",
+        ja: "年中無休で、毎日11:00〜23:00まで営業しています。ランチから夜遅いディナーまで通し営業で、定休日はありません。",
+      },
+    },
+    {
+      question: {
+        en: "Do you serve vegetarian, vegan, Jain or Halal food?",
+        ja: "ベジタリアン・ヴィーガン・ジャイン・ハラール料理はありますか？",
+      },
+      answer: {
+        en: "Yes. Vegetarian dishes are a permanent part of the menu, and our kitchen prepares Jain and Halal meals on request — just tell us when you order or when you book. Everything is cooked to order, so if you're vegan let us know and we'll leave the dairy out wherever the dish allows.",
+        ja: "はい。ベジタリアン料理は常時ご用意しており、ジャイン・ハラール対応もご注文時またはご予約時にお申し付けいただければお作りします。すべて注文後にお作りしますので、ヴィーガンの方は乳製品を除いた調理もご相談ください。",
+      },
+    },
+    {
+      question: {
+        en: "Can I book a table, and do you take walk-ins?",
+        ja: "予約はできますか？予約なしでも入れますか？",
+      },
+      answer: {
+        en: "Both. Call us on +81 75-211-5131 or reserve online through Tabelog. Walk-in guests are welcome too — we seat around 50.",
+        ja: "どちらも可能です。お電話（+81 75-211-5131）または食べログからオンラインでご予約いただけます。約50席ございますので、ご予約なしでもお気軽にどうぞ。",
+      },
+    },
+    {
+      question: {
+        en: "How spicy is the food? Can you make it mild?",
+        ja: "辛さは調整できますか？",
+      },
+      answer: {
+        en: "Every curry is cooked to order across five spice levels, from mild to very hot, so we can make it as gentle or as fiery as you like. Children's portions are kept mild by default.",
+        ja: "カレーはすべてご注文を受けてからお作りし、甘口から激辛まで5段階で辛さを調整できます。お子様向けは基本的に甘口でご用意します。",
+      },
+    },
+    {
+      question: {
+        en: "Do you accept credit cards?",
+        ja: "クレジットカードは使えますか？",
+      },
+      answer: {
+        en: "Yes — Visa, Mastercard, JCB, American Express, Diners Club and Discover, plus debit cards and cash in Japanese yen.",
+        ja: "はい。VISA・Mastercard・JCB・AMEX・Diners・Discover のほか、デビットカードと現金（日本円）がご利用いただけます。",
+      },
+    },
+    {
+      question: {
+        en: "How much does a meal cost?",
+        ja: "予算はどのくらいですか？",
+      },
+      answer: {
+        en: "Dinner sets — curry, tandoori, naan, rice, salad and a drink — run from ¥1,450 to ¥2,350, with a student set at ¥1,550 and a child set at ¥900. Individual curries and breads are priced à la carte.",
+        ja: "カレー・タンドリー・ナン・ライス・サラダ・ドリンクが付くディナーセットは ¥1,450〜¥2,350、学生セット ¥1,550、お子様セット ¥900 です。単品のカレーやナンはアラカルト価格でご用意しています。",
+      },
+    },
+    {
+      question: {
+        en: "Do you offer takeout?",
+        ja: "テイクアウトはできますか？",
+      },
+      answer: {
+        en: "Yes, the menu is available to take away — curries, tandoori dishes and breads from the tandoor all travel well. Order at the restaurant or call ahead.",
+        ja: "はい、メニューはテイクアウトでもご利用いただけます。カレー、タンドール料理、焼きたてのナンもお持ち帰りいただけます。店頭またはお電話でご注文ください。",
+      },
+    },
+    {
+      question: {
+        en: "Is the restaurant good for families and groups?",
+        ja: "子ども連れやグループでも利用できますか？",
+      },
+      answer: {
+        en: "Children are very welcome — there's a dedicated child set and mild spicing — and with roughly 50 seats we can take larger groups. Free Wi-Fi throughout, and there is parking nearby.",
+        ja: "お子様連れも大歓迎で、お子様セットや甘口の辛さ調整もございます。約50席ございますので、グループでのご利用も可能です。無料Wi-Fi完備、近隣に駐車場がございます。",
       },
     },
   ],

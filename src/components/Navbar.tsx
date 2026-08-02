@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   AnimatePresence,
   motion,
@@ -10,20 +11,25 @@ import {
 import { CalendarCheck, Menu, Phone, X } from "lucide-react";
 
 import { RESTAURANT_DATA } from "@/data/restaurantData";
-import { UI, type Lang } from "@/data/i18n";
+import { UI, langPath, type Lang } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
 import { buttonVariants } from "@/components/ui/button";
 import { buildBookingUrl, cn, scrollToSection } from "@/lib/utils";
 
 const NAV_IDS = ["story", "menu", "gallery", "reviews", "visit"] as const;
 
-const LANGS: { code: Lang; label: string }[] = [
-  { code: "en", label: "EN" },
-  { code: "ja", label: "日本語" },
+const LANG_LINKS: { code: Lang; label: string; hrefLang: string }[] = [
+  { code: "en", label: "EN", hrefLang: "en" },
+  { code: "ja", label: "日本語", hrefLang: "ja" },
 ];
 
+/**
+ * Each language is its own URL, so the toggle is a pair of real links. Crawlers
+ * follow them, which is how the Japanese page gets discovered and indexed;
+ * an onClick-only switch would have left it invisible.
+ */
 function LangToggle({ className }: { className?: string }) {
-  const { lang, setLang } = useLang();
+  const { lang } = useLang();
   return (
     <div
       role="group"
@@ -33,12 +39,13 @@ function LangToggle({ className }: { className?: string }) {
         className
       )}
     >
-      {LANGS.map(({ code, label }) => (
-        <button
+      {LANG_LINKS.map(({ code, label, hrefLang }) => (
+        <Link
           key={code}
-          type="button"
-          aria-pressed={lang === code}
-          onClick={() => setLang(code)}
+          href={langPath(code)}
+          hrefLang={hrefLang}
+          lang={hrefLang}
+          aria-current={lang === code ? "true" : undefined}
           className={cn(
             "relative cursor-pointer whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors",
             lang === code
@@ -54,7 +61,7 @@ function LangToggle({ className }: { className?: string }) {
             />
           )}
           <span className="relative z-10">{label}</span>
-        </button>
+        </Link>
       ))}
     </div>
   );
