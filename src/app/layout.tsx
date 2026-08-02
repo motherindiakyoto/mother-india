@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     // Leads with the search intent people actually type: cuisine + city.
-    default: `${brand.brandName} — Indian & Nepali Restaurant in Kyoto`,
+    default: `${brand.brandName} — Indian Restaurant & Bar in Kyoto`,
     template: `%s | ${brand.brandName} Kyoto`,
   },
   description: brand.description.en,
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: `${brand.brandName} — Indian & Nepali Restaurant in Kyoto`,
+    title: `${brand.brandName} — Indian Restaurant & Bar in Kyoto`,
     description: brand.description.en,
     url: SITE_URL,
     type: "website",
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${brand.brandName} — Indian & Nepali Restaurant in Kyoto`,
+    title: `${brand.brandName} — Indian Restaurant & Bar in Kyoto`,
     description: brand.description.en,
   },
   category: "restaurant",

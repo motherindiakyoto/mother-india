@@ -125,8 +125,8 @@ export const RESTAURANT_DATA: RestaurantData = {
     subTitle: "Restaurant & Bar Kyoto",
     legalName: "MOTHER INDIA RESTAURANT & BAR",
     tagline: {
-      en: "Indian & Nepali cooking, four floors above Kyoto",
-      ja: "京都のビル4階、インドとネパールの味",
+      en: "Indian cooking, four floors above Kyoto",
+      ja: "京都のビル4階、インドの味",
     },
     description: {
       en: "Curries cooked to order, breads straight from the tandoor, and a full bar — with Jain and vegetarian dishes prepared with real care.",
@@ -690,8 +690,8 @@ export const RESTAURANT_DATA: RestaurantData = {
         ],
       },
       {
-        id: "nepali",
-        name: { en: "Nepali Street Food", ja: "ネパール屋台料理" },
+        id: "street-food",
+        name: { en: "Street Food", ja: "屋台料理" },
         items: [
           {
             name: { en: "Pani Puri (8 pcs)", ja: "パニプリ（8個）" },
@@ -1064,7 +1064,9 @@ export const RESTAURANT_DATA: RestaurantData = {
             description: { en: "Single / double", ja: "シングル／ダブル" },
           },
           {
-            name: { en: "Nepali Khukri Rum", ja: "ネパール ククリラム" },
+            // "Khukri Rum" is the product's actual brand name — kept as-is.
+            // Only the country descriptor in front of it was dropped.
+            name: { en: "Khukri Rum", ja: "ククリラム" },
             price: "¥700 / ¥1,100",
             description: { en: "Single / double", ja: "シングル／ダブル" },
           },

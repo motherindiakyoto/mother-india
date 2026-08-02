@@ -138,7 +138,7 @@ export function buildRestaurantJsonLd(lang: Lang = "en") {
         closes: "23:00",
       },
     ],
-    servesCuisine: ["Indian", "Nepalese", "Asian"],
+    servesCuisine: ["Indian", "Asian"],
     menu: `${url}#menu`,
     hasMenu: `${url}#menu`,
     // Most mains land between ¥390 and ¥2,500 — "¥¥" in Google's banding.

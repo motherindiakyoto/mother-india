@@ -46,8 +46,8 @@ export const UI = {
     // we serve or where — this line is what makes the page's single most
     // important heading match how people search for us.
     h1Kicker: {
-      en: "Indian & Nepali Restaurant · Kyoto",
-      ja: "インド・ネパール料理 · 京都 中京区",
+      en: "Indian Restaurant & Bar · Kyoto",
+      ja: "インド料理レストラン · 京都 中京区",
     },
     openDaily: { en: "Open Daily", ja: "年中無休" },
     explore: { en: "Explore Our Menu", ja: "メニューを見る" },

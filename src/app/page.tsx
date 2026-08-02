@@ -9,7 +9,7 @@ const { metadata: brand } = RESTAURANT_DATA;
 
 // Leads with the phrase people actually search — cuisine and city — rather
 // than the brand name, which only the people who already know us type.
-const TITLE = "Indian & Nepali Restaurant in Kyoto | Mother India";
+const TITLE = "Indian Restaurant & Bar in Kyoto | Mother India";
 const DESCRIPTION =
   "Curries cooked to order and naan straight from the tandoor, four floors above Nakagyo Ward, Kyoto. Vegetarian, Jain and Halal on request. Open daily 11:00–23:00.";
 

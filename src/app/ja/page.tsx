@@ -13,9 +13,9 @@ const { metadata: brand } = RESTAURANT_DATA;
  * ("京都 インド料理", "中京区 カレー") can only be won by a document that is
  * actually written in Japanese.
  */
-const TITLE = "京都のインド・ネパール料理店｜マザーインディア 中京区";
+const TITLE = "京都のインド料理レストラン｜マザーインディア 中京区";
 const DESCRIPTION =
-  "京都・中京区、ヒジカタビル4Fのインド／ネパール料理レストラン。注文を受けてから仕込むカレーと、タンドール窯で焼き上げるナン。ベジタリアン・ジャイン・ハラール対応。年中無休、11:00〜23:00営業。";
+  "京都・中京区、ヒジカタビル4Fのインド料理レストラン＆バー。注文を受けてから仕込むカレーと、タンドール窯で焼き上げるナン。ベジタリアン・ジャイン・ハラール対応。年中無休、11:00〜23:00営業。";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "京都 ナン",
     "京都 ハラール",
     "京都 ベジタリアン レストラン",
-    "京都 ネパール料理",
+    "京都 ビリヤニ",
     "河原町 インド料理",
     "マザーインディア 京都",
   ],
