@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Mother India">
+  <title>Mother India</title>
+  <defs>
+    <linearGradient id="mi-tile" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FBBF24" />
+      <stop offset=".55" stop-color="#F59E0B" />
+      <stop offset="1" stop-color="#D97706" />
+    </linearGradient>
+  </defs>
+  <!-- Saffron tile rather than obsidian: the mark has to hold its own on a light
+       browser tab as well as a dark one, and the accent reads at 16px where a
+       near-black square would just dissolve into the chrome. -->
+  <rect width="64" height="64" rx="14" fill="url(#mi-tile)" />
+  <!-- Hairline keeps the tile edge defined against a white tab strip. -->
+  <rect x=".5" y=".5" width="63" height="63" rx="13.5" fill="none" stroke="#0F0F11" stroke-opacity=".2" />
+  <!-- MI monogram drawn as strokes, not text: no font dependency, and the 7-unit
+       weight (≈1.75px at 16px) survives downsampling. 10.7:1 against the tile. -->
+  <g fill="none" stroke="#0F0F11" stroke-width="7" stroke-linejoin="miter">
+    <path d="M15 44V21l10 12 10-12v23" />
+    <path d="M48 21v23" />
+  </g>
+</svg>
