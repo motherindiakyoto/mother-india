@@ -59,9 +59,12 @@ export default function Hero() {
         style={reduceMotion ? undefined : { y: backgroundY, scale: backgroundScale }}
         className="absolute inset-0"
       >
+        {/* Described rather than `alt=""`: the wrapper is already `aria-hidden`,
+            so screen readers skip it either way, but crawlers and image search
+            get to know what the photo shows. */}
         <Image
           src={metadata.heroImage.src}
-          alt=""
+          alt={metadata.heroImage.alt}
           fill
           priority
           sizes="100vw"
@@ -103,6 +106,11 @@ export default function Hero() {
             >
               {t(UI.hero.h1Kicker)}
             </motion.span>
+            {/* Both spans are block-level, so this space changes nothing
+                visually — but without it the extracted heading text reads
+                "…KyotoMother India" and the joined token matches nothing in
+                the page copy. */}
+            {" "}
             <motion.span
               initial={reduceMotion ? false : { opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}

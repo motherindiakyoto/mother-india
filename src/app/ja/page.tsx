@@ -14,8 +14,11 @@ const { metadata: brand } = RESTAURANT_DATA;
  * actually written in Japanese.
  */
 const TITLE = "京都のインド料理レストラン｜マザーインディア 中京区";
+// Full-width characters cost roughly twice a Latin one, so the Japanese line is
+// held to ~85 characters to stay inside the same rendered-width budget as the
+// English description.
 const DESCRIPTION =
-  "京都・中京区、ヒジカタビル4Fのインド料理レストラン＆バー。注文を受けてから仕込むカレーと、タンドール窯で焼き上げるナン。ベジタリアン・ジャイン・ハラール対応。年中無休、11:00〜23:00営業。";
+  "京都・中京区、ヒジカタビル4Fのインド料理レストラン＆バー。注文後に仕込むカレーとタンドール窯のナン。ベジタリアン・ジャイン・ハラール対応。年中無休11:00〜23:00。";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },

@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { useMounted } from "@/lib/responsive";
 import { cn } from "@/lib/utils";
 
 const arrowClass =
@@ -40,6 +41,9 @@ export default function MotionSlider({
   className,
 }: MotionSliderProps) {
   const reduceMotion = useReducedMotion();
+  // The loop clone is a client-side visual device. Held back until mount so the
+  // SSR markup names each dish once rather than twice.
+  const mounted = useMounted();
   const trackRef = useRef<HTMLDivElement>(null);
   const [loopWidth, setLoopWidth] = useState(0);
   const x = useMotionValue(0);
@@ -128,9 +132,11 @@ export default function MotionSlider({
         >
           {children}
           {/* Duplicate set for the seamless loop — hidden from assistive tech. */}
-          <div aria-hidden="true" className="contents">
-            {children}
-          </div>
+          {mounted && (
+            <div aria-hidden="true" className="contents">
+              {children}
+            </div>
+          )}
         </motion.div>
       </div>
 

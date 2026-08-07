@@ -14,6 +14,7 @@ import { RESTAURANT_DATA, type GalleryImage } from "@/data/restaurantData";
 import { UI } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
 import SectionHeading from "@/components/SectionHeading";
+import { useMediaQuery } from "@/lib/responsive";
 import { cn } from "@/lib/utils";
 
 const CARD_WIDTHS: Record<GalleryImage["size"], string> = {
@@ -205,6 +206,10 @@ export default function Gallery() {
   const { gallery, metadata } = RESTAURANT_DATA;
   const { t } = useLang();
   const reduceMotion = useReducedMotion();
+  // Exactly one variant is mounted. Rendering both and hiding one with
+  // `hidden md:block` left the section heading and all 23 photo captions in the
+  // markup twice over.
+  const pinned = useMediaQuery("(min-width: 768px)") && !reduceMotion;
 
   return (
     // No overflow-hidden on this section — it would break the sticky pinning of the filmstrip.
@@ -214,15 +219,12 @@ export default function Gallery() {
         className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(21,128,61,0.06),transparent_55%)]"
       />
 
-      <div className="relative py-20 md:py-0">
-        {!reduceMotion && (
-          <div className="hidden md:block">
-            <PinnedFilmstrip photos={gallery} />
-          </div>
-        )}
-        <div className={cn(reduceMotion ? "" : "md:hidden", "md:py-20")}>
+      <div className={cn("relative", !pinned && "py-20")}>
+        {pinned ? (
+          <PinnedFilmstrip photos={gallery} />
+        ) : (
           <SwipeRow photos={gallery} />
-        </div>
+        )}
       </div>
 
       <div className="relative mx-auto flex max-w-7xl flex-col items-center justify-center gap-3 px-4 pb-20 pt-10 sm:flex-row sm:px-6 md:pb-28 lg:px-8">

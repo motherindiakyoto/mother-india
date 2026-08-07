@@ -13,6 +13,7 @@ import { RESTAURANT_DATA, type Testimonial } from "@/data/restaurantData";
 import { UI } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
 import SectionHeading from "@/components/SectionHeading";
+import { useMediaQuery, useMounted } from "@/lib/responsive";
 import { cn } from "@/lib/utils";
 
 const MARQUEE_SPEED = 38; // px per second
@@ -76,6 +77,11 @@ function Marquee({ testimonials }: { testimonials: Testimonial[] }) {
   const [loopWidth, setLoopWidth] = useState(0);
   const paused = useRef(false);
   const x = useMotionValue(0);
+  // The clone half only exists to make the scroll wrap seamlessly, which is a
+  // client-side effect. Keeping it out of the SSR markup stops every quote from
+  // being served to crawlers twice; the ResizeObserver below re-measures once
+  // it mounts.
+  const mounted = useMounted();
 
   useEffect(() => {
     const track = trackRef.current;
@@ -108,11 +114,16 @@ function Marquee({ testimonials }: { testimonials: Testimonial[] }) {
           />
         ))}
         {/* Duplicate set for a seamless loop — hidden from assistive tech. */}
-        <div aria-hidden="true" className="contents">
-          {testimonials.map((testimonial, index) => (
-            <TestimonialCard key={`clone-${index}`} testimonial={testimonial} />
-          ))}
-        </div>
+        {mounted && (
+          <div aria-hidden="true" className="contents">
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard
+                key={`clone-${index}`}
+                testimonial={testimonial}
+              />
+            ))}
+          </div>
+        )}
       </motion.div>
     </div>
   );
@@ -122,6 +133,8 @@ export default function Testimonials() {
   const { testimonials } = RESTAURANT_DATA;
   const { t } = useLang();
   const reduceMotion = useReducedMotion();
+  // One variant only — the phone row and the marquee carry the same quotes.
+  const wide = useMediaQuery("(min-width: 640px)");
 
   return (
     <section id="reviews" className="bg-obsidian-soft py-20 md:py-28">
@@ -139,22 +152,19 @@ export default function Testimonials() {
             <TestimonialCard key={index} testimonial={testimonial} />
           ))}
         </div>
+      ) : wide ? (
+        <Marquee testimonials={testimonials} />
       ) : (
-        <>
-          {/* Phones read at their own pace — a moving marquee can't be paused by touch. */}
-          <div className="scroll-row flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:hidden">
-            {testimonials.map((testimonial, index) => (
-              <TestimonialCard
-                key={index}
-                testimonial={testimonial}
-                className="snap-center"
-              />
-            ))}
-          </div>
-          <div className="hidden sm:block">
-            <Marquee testimonials={testimonials} />
-          </div>
-        </>
+        /* Phones read at their own pace — a moving marquee can't be paused by touch. */
+        <div className="scroll-row flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2">
+          {testimonials.map((testimonial, index) => (
+            <TestimonialCard
+              key={index}
+              testimonial={testimonial}
+              className="snap-center"
+            />
+          ))}
+        </div>
       )}
     </section>
   );

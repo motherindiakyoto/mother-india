@@ -68,7 +68,10 @@ function MenuRow({ item }: { item: PricedItem }) {
       )}
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-3">
-          <h4
+          {/* A priced row in a list, not a section of the document. As an <h4>
+              it both skipped a level under the section's <h2> and buried the
+              page's real headings under a dish name per row. */}
+          <p
             className={cn(
               "flex items-center gap-1.5 text-sm font-medium sm:text-base",
               item.recommended ? "text-saffron-glow" : "text-cream"
@@ -81,7 +84,7 @@ function MenuRow({ item }: { item: PricedItem }) {
                 aria-label={t(UI.menu.recommendedLabel)}
               />
             )}
-          </h4>
+          </p>
           <span
             aria-hidden="true"
             className="mb-1 flex-1 border-b border-dotted border-white/15"
