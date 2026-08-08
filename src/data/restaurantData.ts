@@ -5,7 +5,8 @@
  *
  * Menu items, prices and Japanese names are transcribed from photographs of
  * the restaurant's own printed menu (see `Mother India menu/` in the repo
- * root) — not from third-party listings.
+ * root) — not from third-party listings. The few dishes confirmed directly by
+ * the restaurant instead of from a photo carry a comment saying so.
  *
  * One printed page is still not photographed: the snacks & momo page
  * (nos. 51–70). It is deliberately absent here rather than carried over at
@@ -607,6 +608,18 @@ export const RESTAURANT_DATA: RestaurantData = {
             description: {
               en: "Paneer simmered in a buttery, creamy tomato sauce",
               ja: "パニールをバターとトマトのクリーミーなソースで",
+            },
+          },
+          // Not on the photographed curry page — confirmed directly by the
+          // restaurant, priced to match the chicken biryani. Listed here rather
+          // than only under Rice & Biryani so it's found where vegetarian
+          // guests are already looking.
+          {
+            name: { en: "Vegetable Biryani", ja: "ベジタブルビリヤニ" },
+            price: "¥1,350",
+            description: {
+              en: "Served with raita",
+              ja: "ライタ添え",
             },
           },
         ],
