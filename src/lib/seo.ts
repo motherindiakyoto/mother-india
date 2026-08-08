@@ -1,5 +1,5 @@
 import { RESTAURANT_DATA } from "@/data/restaurantData";
-import { langPath, type Lang } from "@/data/i18n";
+import { localePath, type Lang } from "@/data/i18n";
 import { PRODUCTION_URL } from "@/lib/site";
 
 export { PRODUCTION_URL };
@@ -34,28 +34,43 @@ export const SITE_URL = resolveSiteUrl();
 /** Latitude / longitude of the restaurant, read off its Google Maps listing. */
 export const GEO = { latitude: 35.0092423, longitude: 135.7691765 } as const;
 
-/** Absolute URL for a locale's page — what canonical and hreflang both need. */
-export function absoluteUrl(lang: Lang): string {
-  return lang === "ja" ? `${SITE_URL}/ja` : SITE_URL;
+/**
+ * Absolute URL for one locale's copy of a route — what canonical and hreflang
+ * both need. `absoluteUrl("ja", "menu")` → `https://…/ja/menu`.
+ */
+export function absoluteUrl(lang: Lang, segment = ""): string {
+  const path = localePath(lang, segment);
+  return path === "/" ? SITE_URL : `${SITE_URL}${path}`;
 }
 
 /**
- * `alternates` for a page's metadata: a self-referencing canonical plus the
- * hreflang cluster. Both locales must list *both* URLs and agree with each
- * other, or Google discards the annotations and picks a winner itself. The
- * same three entries are repeated in `sitemap.ts` — page-level and
- * sitemap-level hreflang have to match exactly or they're read as conflicting.
+ * The hreflang cluster for one route, across both locales.
+ *
+ * Every page must list *both* of its language URLs and the two must agree with
+ * each other, or Google discards the annotations and picks a winner itself.
+ * Critically, the cluster is per-route: `/menu` has to point at `/ja/menu`,
+ * not at `/ja`. Pointing every page's alternates at the home page is the
+ * classic way to get a whole translated section dropped from the index.
+ *
+ * `sitemap.ts` repeats these same entries — page-level and sitemap-level
+ * hreflang have to match exactly or they're read as conflicting.
  */
-export const HREFLANG = {
-  en: "/",
-  ja: "/ja",
-  "x-default": "/",
-} as const;
-
-export function alternatesFor(lang: Lang) {
+export function hreflangFor(segment = "") {
   return {
-    canonical: langPath(lang),
-    languages: HREFLANG,
+    en: localePath("en", segment),
+    ja: localePath("ja", segment),
+    "x-default": localePath("en", segment),
+  };
+}
+
+/** Back-compat alias for the home-page cluster. */
+export const HREFLANG = hreflangFor();
+
+/** `alternates` for a page: self-referencing canonical plus its hreflang set. */
+export function alternatesFor(lang: Lang, segment = "") {
+  return {
+    canonical: localePath(lang, segment),
+    languages: hreflangFor(segment),
   };
 }
 
@@ -81,6 +96,7 @@ function numericPrice(price: string): string | null {
 export function buildRestaurantJsonLd(lang: Lang = "en") {
   const { metadata, contact, paymentMethods, amenities } = RESTAURANT_DATA;
   const url = absoluteUrl(lang);
+  const menuUrl = absoluteUrl(lang, "menu");
 
   return {
     "@context": "https://schema.org",
@@ -139,8 +155,11 @@ export function buildRestaurantJsonLd(lang: Lang = "en") {
       },
     ],
     servesCuisine: ["Indian", "Asian"],
-    menu: `${url}#menu`,
-    hasMenu: `${url}#menu`,
+    // Now that the whole menu has its own crawlable URL, point at that rather
+    // than at the home page's anchor — it's the page that actually lists
+    // every dish and price.
+    menu: menuUrl,
+    hasMenu: { "@id": `${menuUrl}#menu` },
     // Most mains land between ¥390 and ¥2,500 — "¥¥" in Google's banding.
     priceRange: "¥¥",
     currenciesAccepted: "JPY",
@@ -173,15 +192,38 @@ export function buildRestaurantJsonLd(lang: Lang = "en") {
       },
       {
         "@type": "ViewAction",
-        target: `${url}#menu`,
+        target: menuUrl,
         name: "View the menu",
       },
     ],
     sameAs: [metadata.gMapsLink, metadata.tabelogUrl],
+    subjectOf: { "@id": `${url}#faq` },
+  };
+}
+
+/**
+ * schema.org/Menu — the full dish-and-price listing as its own entity, which
+ * `Restaurant.hasMenu` points at.
+ *
+ * Unlike the old inline version this carries *every* item rather than the
+ * first twelve per section: it's a standalone node referenced by `@id`, so
+ * there's no reason to truncate, and dish-level offers are exactly what gets
+ * matched against "paneer butter masala kyoto" style queries.
+ */
+export function buildMenuJsonLd(lang: Lang) {
+  const menuUrl = absoluteUrl(lang, "menu");
+  return {
+    "@context": "https://schema.org",
+    "@type": "Menu",
+    "@id": `${menuUrl}#menu`,
+    url: menuUrl,
+    name: lang === "ja" ? "フルメニュー" : "The Full Menu",
+    inLanguage: lang === "ja" ? "ja-JP" : "en",
+    provider: { "@id": `${SITE_URL}/#restaurant` },
     hasMenuSection: RESTAURANT_DATA.fullMenu.sections.map((section) => ({
       "@type": "MenuSection",
       name: section.name[lang],
-      hasMenuItem: section.items.slice(0, 12).map((item) => {
+      hasMenuItem: section.items.map((item) => {
         const price = item.price ? numericPrice(item.price) : null;
         return {
           "@type": "MenuItem",
@@ -199,7 +241,6 @@ export function buildRestaurantJsonLd(lang: Lang = "en") {
         };
       }),
     })),
-    subjectOf: { "@id": `${url}#faq` },
   };
 }
 
@@ -221,23 +262,30 @@ export function buildWebSiteJsonLd() {
  * schema.org/WebPage — ties this specific URL to its language, so the two
  * locales read as translations of one page rather than duplicate content.
  */
-export function buildWebPageJsonLd(lang: Lang) {
+export function buildWebPageJsonLd(
+  lang: Lang,
+  segment = "",
+  overrides?: { name?: string; description?: string }
+) {
   const { metadata } = RESTAURANT_DATA;
-  const url = absoluteUrl(lang);
+  const url = absoluteUrl(lang, segment);
+  // The translation pair is per-route: `/ja/menu` is the translation of
+  // `/menu`, not of the home page.
+  const counterpart = absoluteUrl(lang === "ja" ? "en" : "ja", segment);
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "@id": `${url}#webpage`,
     url,
-    name: metadata.legalName,
-    description: metadata.description[lang],
+    name: overrides?.name ?? metadata.legalName,
+    description: overrides?.description ?? metadata.description[lang],
     inLanguage: lang === "ja" ? "ja-JP" : "en",
     isPartOf: { "@id": `${SITE_URL}/#website` },
     about: { "@id": `${SITE_URL}/#restaurant` },
     primaryImageOfPage: `${SITE_URL}/opengraph-image.jpg`,
     ...(lang === "ja"
-      ? { translationOfWork: { "@id": `${SITE_URL}#webpage` } }
-      : { workTranslation: { "@id": `${SITE_URL}/ja#webpage` } }),
+      ? { translationOfWork: { "@id": `${counterpart}#webpage` } }
+      : { workTranslation: { "@id": `${counterpart}#webpage` } }),
   };
 }
 
@@ -270,11 +318,34 @@ export function buildFaqJsonLd(lang: Lang) {
  * `<` is escaped: a stray `</script>` inside any data string would otherwise
  * close the tag early and turn the rest of the payload into live markup.
  */
+function serialize(graph: unknown[]): string {
+  return JSON.stringify(graph).replace(/</g, "\\u003c");
+}
+
 export function jsonLdFor(lang: Lang): string {
-  return JSON.stringify([
+  return serialize([
     buildRestaurantJsonLd(lang),
     buildWebSiteJsonLd(),
     buildWebPageJsonLd(lang),
     buildFaqJsonLd(lang),
-  ]).replace(/</g, "\\u003c");
+    // The home page renders the whole menu too (one category at a time), so
+    // the Menu entity is accurate here as well as on `/menu`.
+    buildMenuJsonLd(lang),
+  ]);
+}
+
+/**
+ * The graph for `/menu`. Same restaurant and website nodes — they're global —
+ * with a page node describing this URL and the Menu it exists to publish.
+ */
+export function jsonLdForMenu(
+  lang: Lang,
+  page: { name: string; description: string }
+): string {
+  return serialize([
+    buildRestaurantJsonLd(lang),
+    buildWebSiteJsonLd(),
+    buildWebPageJsonLd(lang, "menu", page),
+    buildMenuJsonLd(lang),
+  ]);
 }

@@ -57,6 +57,14 @@ section[id] {
   scroll-margin-top: 5.5rem;
 }
 
+/* The full-menu page stacks a sticky category rail under that same navbar, so
+   its sections have two bars to clear, not one. Same specificity as the rule
+   above and declared after it, which is what lets it win — a `scroll-mt-*`
+   utility on the element would lose to `section[id]`. */
+section[id^="menu-"] {
+  scroll-margin-top: 9rem;
+}
+
 /* Swipe rows: hide the scrollbar chrome, keep momentum scrolling. */
 .scroll-row {
   scrollbar-width: none;

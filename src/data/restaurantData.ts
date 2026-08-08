@@ -7,9 +7,13 @@
  * the restaurant's own printed menu (see `Mother India menu/` in the repo
  * root) — not from third-party listings.
  *
- * Two printed pages were not photographed: the vegetarian/paneer curries
- * (menu nos. 97–112) and the snacks & momo page (nos. 51–70). They are
- * deliberately absent here rather than carried over at unverified prices.
+ * One printed page is still not photographed: the snacks & momo page
+ * (nos. 51–70). It is deliberately absent here rather than carried over at
+ * unverified prices.
+ *
+ * The printed menu prints a ★ beside nearly every dish, so it is not a useful
+ * signal on its own. `recommended` is therefore applied sparingly — to the
+ * dishes the kitchen is actually known for — rather than mirroring the print.
  *
  * Every user-facing string is a localized `L` pair ({ en, ja }) resolved
  * through `useLang().t` at render time.
@@ -72,6 +76,12 @@ export interface ScheduleEntry {
   time: string;
 }
 
+/** One step on the printed 5-point spice scale, in the menu's own wording. */
+export interface SpiceLevel {
+  step: number;
+  label: L;
+}
+
 /**
  * A question guests actually ask, with an answer taken only from the facts
  * already on this page — hours, floor, payment, spice, dietary handling.
@@ -111,6 +121,7 @@ export interface RestaurantData {
     /** Compact brand list for the hero strip — no trailing sentence. */
     cardBrands: L;
   };
+  spiceLevels: SpiceLevel[];
   fullMenu: {
     sections: FullMenuSection[];
   };
@@ -244,6 +255,16 @@ export const RESTAURANT_DATA: RestaurantData = {
       ja: "VISA・Mastercard・JCB・AMEX・Diners・Discover",
     },
   },
+
+  // The scale printed at the top of the curry pages, in its own words —
+  // "1. 甘口 Mild" through "5. 激辛 Very Hot".
+  spiceLevels: [
+    { step: 1, label: { en: "Mild", ja: "甘口" } },
+    { step: 2, label: { en: "Normal", ja: "普通" } },
+    { step: 3, label: { en: "Medium Hot", ja: "中辛" } },
+    { step: 4, label: { en: "Double Hot", ja: "辛口" } },
+    { step: 5, label: { en: "Very Hot", ja: "激辛" } },
+  ],
 
   fullMenu: {
     sections: [
@@ -442,6 +463,150 @@ export const RESTAURANT_DATA: RestaurantData = {
             description: {
               en: "With onion & bell pepper",
               ja: "玉ねぎ・ピーマン入り",
+            },
+          },
+          // Seafood curries (nos. 109–112) share the printed "Curry" page with
+          // the meat curries above, under their own "Seafood" sub-heading.
+          {
+            name: { en: "Seafood Curry", ja: "シーフードカレー" },
+            price: "¥1,100",
+            description: {
+              en: "Prawns and assorted seafood cooked in spices",
+              ja: "海老と魚介をスパイスで煮込んだカレー",
+            },
+          },
+          {
+            name: { en: "Prawn Curry", ja: "海老カレー" },
+            price: "¥1,250",
+            description: {
+              en: "Spiced curry with tender, juicy prawns",
+              ja: "ぷりぷりの海老をスパイスで仕上げたカレー",
+            },
+          },
+          {
+            name: { en: "Prawn Masala", ja: "海老マサラ" },
+            price: "¥1,300",
+            description: {
+              en: "Prawns simmered in a rich, aromatic masala sauce",
+              ja: "コクと香りのマサラソースで煮込んだ海老",
+            },
+          },
+          {
+            name: { en: "Sag Prawn Curry", ja: "ほうれん草海老カレー" },
+            price: "¥1,250",
+            description: {
+              en: "Prawns and spinach",
+              ja: "海老とほうれん草のカレー",
+            },
+          },
+        ],
+      },
+      {
+        // Nos. 97–108 from the printed "Curry — Vegetable ベジタブル" page.
+        // Broken out of `curry` into its own tab: vegetarian guests are a large
+        // share of who searches for this restaurant, and burying twelve
+        // meat-free dishes at the bottom of a meat list makes them invisible.
+        id: "vegetarian",
+        name: { en: "Vegetarian", ja: "ベジタリアン" },
+        // No `image`: there is no vegetarian dish photography yet, and the
+        // salad shot already in /public would misrepresent a paneer curry.
+        items: [
+          {
+            name: { en: "Vegetable Curry", ja: "野菜カレー" },
+            price: "¥1,050",
+            description: {
+              en: "Assorted fresh vegetables cooked in spices",
+              ja: "彩り野菜をスパイスで煮込んだヘルシーカレー",
+            },
+          },
+          {
+            name: { en: "Dal Makhani", ja: "ダルマカニ" },
+            price: "¥1,050",
+            recommended: true,
+            description: {
+              en: "Rich black lentil curry cooked with butter and cream",
+              ja: "黒レンズ豆をバターと生クリームで煮込んだ濃厚カレー",
+            },
+          },
+          {
+            name: { en: "Chana Masala", ja: "チャナマサラ" },
+            price: "¥1,100",
+            description: {
+              en: "Chickpeas cooked in a spiced tomato-based curry",
+              ja: "ひよこ豆をスパイシーなトマトベースで煮込んで",
+            },
+          },
+          {
+            name: { en: "Aloo Gobi", ja: "アルゴビ" },
+            price: "¥1,100",
+            description: {
+              en: "Potatoes and cauliflower cooked with aromatic spices",
+              ja: "じゃがいもとカリフラワーを香り高いスパイスで",
+            },
+          },
+          {
+            name: { en: "Aloo Baingan", ja: "アルベイガン" },
+            price: "¥1,150",
+            description: {
+              en: "Potatoes and eggplant simmered with spices",
+              ja: "じゃがいもと茄子をスパイスで煮込んで",
+            },
+          },
+          {
+            name: { en: "Aloo Jeera", ja: "アルジーラ" },
+            price: "¥1,050",
+            description: {
+              en: "Dry-style curry with potatoes and cumin seeds",
+              ja: "じゃがいもとクミンシードのドライカレー",
+            },
+          },
+          {
+            name: { en: "Sag Paneer", ja: "ほうれん草パニール" },
+            price: "¥1,150",
+            description: {
+              en: "Spinach curry with Indian cottage cheese",
+              ja: "ほうれん草とインドのカッテージチーズ「パニール」のカレー",
+            },
+          },
+          {
+            name: { en: "Aloo Palak", ja: "アルパラック" },
+            price: "¥1,050",
+            description: {
+              en: "Spinach and potatoes cooked with spices",
+              ja: "ほうれん草とじゃがいもをスパイスで",
+            },
+          },
+          {
+            name: { en: "Matar Paneer", ja: "マトルパニール" },
+            price: "¥1,150",
+            description: {
+              en: "Green peas and paneer in a tomato-based sauce",
+              ja: "グリーンピースとパニールのトマトベースカレー",
+            },
+          },
+          {
+            name: { en: "Mushroom Paneer", ja: "マッシュルームパニール" },
+            price: "¥1,150",
+            description: {
+              en: "Paneer and mushrooms simmered with spices",
+              ja: "パニールとマッシュルームをスパイスで煮込んで",
+            },
+          },
+          {
+            name: { en: "Kadai Paneer", ja: "カダイパニール" },
+            price: "¥1,250",
+            description: {
+              en: "Paneer with onions and bell peppers in aromatic spices",
+              ja: "パニールと玉ねぎ・ピーマンを香り高いスパイスで",
+            },
+          },
+          {
+            name: { en: "Paneer Butter Masala", ja: "パニールバターマサラ" },
+            price: "¥1,200",
+            recommended: true,
+            description: {
+              en: "Paneer simmered in a buttery, creamy tomato sauce",
+              ja: "パニールをバターとトマトのクリーミーなソースで",
             },
           },
         ],

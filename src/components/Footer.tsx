@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Banknote,
@@ -15,12 +17,13 @@ import {
 } from "lucide-react";
 
 import { RESTAURANT_DATA } from "@/data/restaurantData";
-import { UI } from "@/data/i18n";
+import { UI, localePath, routeFromPath } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
 import SectionHeading from "@/components/SectionHeading";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { buildBookingUrl, cn, scrollToSection } from "@/lib/utils";
+import { cn, scrollToSection } from "@/lib/utils";
+import { useBookingUrl } from "@/lib/useBookingUrl";
 import { useRevealFallback } from "@/lib/reveal";
 
 const fadeUp = {
@@ -30,22 +33,27 @@ const fadeUp = {
   transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
 };
 
-const NAV_IDS = ["story", "menu", "gallery", "reviews", "visit"] as const;
+/** Mirrors the header nav: "Menu" is its own page, the rest are home sections. */
+const NAV_ITEMS = [
+  { id: "story", kind: "anchor" },
+  { id: "menu", kind: "route", segment: "menu" },
+  { id: "gallery", kind: "anchor" },
+  { id: "reviews", kind: "anchor" },
+  { id: "visit", kind: "anchor" },
+] as const satisfies readonly {
+  id: keyof typeof UI.nav;
+  kind: "anchor" | "route";
+  segment?: string;
+}[];
 
 export default function Footer() {
   const { metadata, contact, paymentMethods } = RESTAURANT_DATA;
   const { lang, t } = useLang();
+  const onHome = routeFromPath(usePathname() ?? "/") === "";
   const revealed = useRevealFallback();
   const revealFallback = revealed ? { opacity: 1, y: 0 } : undefined;
   const [copied, setCopied] = useState(false);
-  // Computed post-mount so the visit date (tomorrow) never causes a hydration mismatch.
-  const [bookingUrl, setBookingUrl] = useState(
-    "https://tabelog.com/en/booking/form_course/new?member=2&rcd=26043494"
-  );
-
-  useEffect(() => {
-    setBookingUrl(buildBookingUrl(lang));
-  }, [lang]);
+  const bookingUrl = useBookingUrl(lang);
 
   const copyJapaneseAddress = async () => {
     try {
@@ -214,20 +222,37 @@ export default function Footer() {
 
           <div className="flex flex-col items-center gap-3">
             <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-              {NAV_IDS.map((id) => (
-                <li key={id}>
-                  <a
-                    href={`#${id}`}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      scrollToSection(id);
-                    }}
-                    className="text-sm text-stone-400 transition-colors hover:text-saffron-glow"
-                  >
-                    {t(UI.nav[id])}
-                  </a>
-                </li>
-              ))}
+              {NAV_ITEMS.map((item) => {
+                const className =
+                  "text-sm text-stone-400 transition-colors hover:text-saffron-glow";
+                return (
+                  <li key={item.id}>
+                    {item.kind === "anchor" && onHome ? (
+                      <a
+                        href={`#${item.id}`}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          scrollToSection(item.id);
+                        }}
+                        className={className}
+                      >
+                        {t(UI.nav[item.id])}
+                      </a>
+                    ) : (
+                      <Link
+                        href={
+                          item.kind === "route"
+                            ? localePath(lang, item.segment)
+                            : `${localePath(lang)}#${item.id}`
+                        }
+                        className={className}
+                      >
+                        {t(UI.nav[item.id])}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
             <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
               {[

@@ -24,9 +24,29 @@ export function langPath(lang: Lang): string {
   return lang === "ja" ? "/ja" : "/";
 }
 
+/**
+ * A locale's URL for a sub-route: `menuPath("ja")` → `/ja/menu`. Keeps the
+ * `/ja` prefix in one place now that the site is more than a single page.
+ */
+export function localePath(lang: Lang, segment = ""): string {
+  const suffix = segment ? `/${segment.replace(/^\/+/, "")}` : "";
+  if (lang === "ja") return `/ja${suffix}`;
+  return suffix || "/";
+}
+
 /** The language a pathname belongs to. Anything under `/ja` is Japanese. */
 export function langFromPath(pathname: string): Lang {
   return pathname === "/ja" || pathname.startsWith("/ja/") ? "ja" : "en";
+}
+
+/**
+ * The route a pathname sits on, ignoring locale — `/ja/menu` and `/menu` both
+ * report `"menu"`. Lets the language toggle keep you on the page you're on
+ * instead of dropping you back at the home page in the other language.
+ */
+export function routeFromPath(pathname: string): string {
+  const withoutLocale = pathname.replace(/^\/ja(?=\/|$)/, "");
+  return withoutLocale.replace(/^\/+|\/+$/g, "");
 }
 
 /** Shared UI strings used across multiple components. */
@@ -73,6 +93,35 @@ export const UI = {
     },
     tabelogLink: { en: "Full menu on Tabelog", ja: "食べログでフルメニューを見る" },
     recommendedLabel: { en: "House recommendation", ja: "おすすめ" },
+    viewFullMenu: { en: "View the full menu", ja: "全メニューを見る" },
+  },
+  /**
+   * Copy for the standalone `/menu` page. The home page teases the menu one
+   * category at a time; this page prints all of it on one scrollable document,
+   * which is what people actually want to read before they decide to come.
+   */
+  menuPage: {
+    // No eyebrow or standfirst: the page is a menu, and anything above the
+    // first dish is something the reader has to scroll past to get what they
+    // came for. The title alone carries it.
+    title: { en: "The Full Menu", ja: "フルメニュー" },
+    jumpLabel: { en: "Jump to a section", ja: "セクションへ移動" },
+    itemCount: { en: "dishes", ja: "品" },
+    spiceTitle: { en: "Choose your spice level", ja: "辛さをお選びいただけます" },
+    spiceNote: {
+      en: "Every curry is cooked to order — tell us where on the scale you'd like it.",
+      ja: "カレーはすべてご注文後にお作りします。お好みの辛さをお申し付けください。",
+    },
+    dietTitle: { en: "Vegetarian, Jain & Halal", ja: "ベジタリアン・ジャイン・ハラール" },
+    dietNote: {
+      en: "The Vegetarian section is entirely meat-free, and the kitchen prepares Jain and Halal meals on request. Tell us when you order and we'll cook to your requirement.",
+      ja: "ベジタリアンのセクションはすべて肉不使用です。ジャイン・ハラール対応もご注文時にお申し付けいただければお作りします。",
+    },
+    priceNote: {
+      en: "All prices include tax. Menu and prices may change without notice — call us if a dish matters to your visit.",
+      ja: "表示価格は税込です。メニュー・価格は予告なく変更となる場合がございます。お目当てのお料理がある場合はお電話でご確認ください。",
+    },
+    backToTop: { en: "Back to top", ja: "上へ戻る" },
   },
   gallery: {
     eyebrow: { en: "From the Table", ja: "テーブルから" },

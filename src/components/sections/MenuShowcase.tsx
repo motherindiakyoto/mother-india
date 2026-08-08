@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ExternalLink, Star } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 
 import { RESTAURANT_DATA, type PricedItem } from "@/data/restaurantData";
-import { UI } from "@/data/i18n";
+import { UI, localePath } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
 import SectionHeading from "@/components/SectionHeading";
 import MotionSlider from "@/components/MotionSlider";
+import MenuRow from "@/components/MenuRow";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 function SignatureCard({
@@ -53,62 +56,10 @@ function SignatureCard({
   );
 }
 
-function MenuRow({ item }: { item: PricedItem }) {
-  const { t } = useLang();
-  return (
-    <li className="flex items-start gap-4 border-b border-white/5 py-3.5">
-      {item.photo && (
-        <Image
-          src={item.photo}
-          alt={t(item.name)}
-          width={64}
-          height={64}
-          className="size-16 shrink-0 rounded-xl border border-white/10 object-cover"
-        />
-      )}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline gap-3">
-          {/* A priced row in a list, not a section of the document. As an <h4>
-              it both skipped a level under the section's <h2> and buried the
-              page's real headings under a dish name per row. */}
-          <p
-            className={cn(
-              "flex items-center gap-1.5 text-sm font-medium sm:text-base",
-              item.recommended ? "text-saffron-glow" : "text-cream"
-            )}
-          >
-            {t(item.name)}
-            {item.recommended && (
-              <Star
-                className="size-3.5 shrink-0 fill-saffron-bright text-saffron-bright"
-                aria-label={t(UI.menu.recommendedLabel)}
-              />
-            )}
-          </p>
-          <span
-            aria-hidden="true"
-            className="mb-1 flex-1 border-b border-dotted border-white/15"
-          />
-          {item.price && (
-            <span className="shrink-0 text-sm tabular-nums text-stone-300 sm:text-base">
-              {item.price}
-            </span>
-          )}
-        </div>
-        {item.description && (
-          <p className="mt-1 pr-2 text-xs leading-relaxed text-stone-500">
-            {t(item.description)}
-          </p>
-        )}
-      </div>
-    </li>
-  );
-}
-
 export default function MenuShowcase() {
   const { fullMenu, metadata } = RESTAURANT_DATA;
   const { sections } = fullMenu;
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const [activeId, setActiveId] = useState(sections[0].id);
 
   const active = sections.find((section) => section.id === activeId) ?? sections[0];
@@ -246,7 +197,20 @@ export default function MenuShowcase() {
           </motion.div>
         </AnimatePresence>
 
-        <p className="mt-12 flex flex-col items-center justify-center gap-2 text-center text-sm text-stone-500 sm:flex-row sm:gap-6">
+        {/* The tabs above show one category at a time. This is the way through
+            to the whole thing on one page — the view most people actually want
+            before deciding to come. */}
+        <div className="mt-12 flex justify-center">
+          <Link
+            href={localePath(lang, "menu")}
+            className={buttonVariants({ variant: "primary", size: "lg" })}
+          >
+            {t(UI.menu.viewFullMenu)}
+            <ArrowRight aria-hidden="true" />
+          </Link>
+        </div>
+
+        <p className="mt-8 flex flex-col items-center justify-center gap-2 text-center text-sm text-stone-500 sm:flex-row sm:gap-6">
           <span>{t(UI.menu.footerLine)}</span>
           <a
             href={metadata.tabelogMenuUrl}

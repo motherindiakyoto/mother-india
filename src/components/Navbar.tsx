@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   AnimatePresence,
   motion,
@@ -11,12 +12,36 @@ import {
 import { CalendarCheck, Menu, Phone, X } from "lucide-react";
 
 import { RESTAURANT_DATA } from "@/data/restaurantData";
-import { UI, langPath, type Lang } from "@/data/i18n";
+import { UI, localePath, routeFromPath, type Lang } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
 import { buttonVariants } from "@/components/ui/button";
-import { buildBookingUrl, cn, scrollToSection } from "@/lib/utils";
+import { cn, scrollToSection } from "@/lib/utils";
+import { useBookingUrl } from "@/lib/useBookingUrl";
 
-const NAV_IDS = ["story", "menu", "gallery", "reviews", "visit"] as const;
+/**
+ * The nav mixes two kinds of destination now that the menu has its own page:
+ * `anchor` items scroll to a section of the home page, `route` items navigate.
+ * "Menu" is a route — someone clicking it wants the whole menu with prices,
+ * not the teaser strip halfway down the home page.
+ */
+const NAV_ITEMS = [
+  { id: "story", kind: "anchor" },
+  { id: "menu", kind: "route", segment: "menu" },
+  { id: "gallery", kind: "anchor" },
+  { id: "reviews", kind: "anchor" },
+  { id: "visit", kind: "anchor" },
+] as const satisfies readonly {
+  id: keyof typeof UI.nav;
+  kind: "anchor" | "route";
+  segment?: string;
+}[];
+
+/**
+ * Ids the scroll-spy watches on the home page. "Menu" is included even though
+ * it navigates away: the home page still has a `#menu` section, and lighting
+ * up the nav item while you're reading it is the point of the spy.
+ */
+const SPY_IDS = NAV_ITEMS.map((item) => item.id);
 
 const LANG_LINKS: { code: Lang; label: string; hrefLang: string }[] = [
   { code: "en", label: "EN", hrefLang: "en" },
@@ -27,9 +52,13 @@ const LANG_LINKS: { code: Lang; label: string; hrefLang: string }[] = [
  * Each language is its own URL, so the toggle is a pair of real links. Crawlers
  * follow them, which is how the Japanese page gets discovered and indexed;
  * an onClick-only switch would have left it invisible.
+ *
+ * The link keeps you on the route you're already reading — from `/menu` the
+ * Japanese link goes to `/ja/menu`, not back to the Japanese home page.
  */
 function LangToggle({ className }: { className?: string }) {
   const { lang } = useLang();
+  const route = routeFromPath(usePathname() ?? "/");
   return (
     <div
       role="group"
@@ -42,7 +71,7 @@ function LangToggle({ className }: { className?: string }) {
       {LANG_LINKS.map(({ code, label, hrefLang }) => (
         <Link
           key={code}
-          href={langPath(code)}
+          href={localePath(code, route)}
           hrefLang={hrefLang}
           lang={hrefLang}
           aria-current={lang === code ? "true" : undefined}
@@ -70,19 +99,14 @@ function LangToggle({ className }: { className?: string }) {
 export default function Navbar() {
   const { metadata, contact } = RESTAURANT_DATA;
   const { lang, t } = useLang();
+  const route = routeFromPath(usePathname() ?? "/");
+  const onHome = route === "";
   const [scrolled, setScrolled] = useState(false);
   const [pastHero, setPastHero] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  // Computed post-mount so the visit date (tomorrow) never causes a hydration mismatch.
-  const [bookingUrl, setBookingUrl] = useState(
-    "https://tabelog.com/en/booking/form_course/new?member=2&rcd=26043494"
-  );
+  const bookingUrl = useBookingUrl(lang);
   const { scrollY } = useScroll();
-
-  useEffect(() => {
-    setBookingUrl(buildBookingUrl(lang));
-  }, [lang]);
 
   useMotionValueEvent(scrollY, "change", (y) => {
     setScrolled(y > 16);
@@ -91,8 +115,11 @@ export default function Navbar() {
   });
 
   // Scroll-spy: highlight the nav link of the section currently in view.
+  // Only the home page has those sections to watch.
   useEffect(() => {
-    const sections = NAV_IDS.map((id) => document.getElementById(id)).filter(
+    if (!onHome) return;
+
+    const sections = SPY_IDS.map((id) => document.getElementById(id)).filter(
       (el): el is HTMLElement => el !== null
     );
 
@@ -107,7 +134,7 @@ export default function Navbar() {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [onHome]);
 
   // Lock page scroll while the mobile sheet is open.
   useEffect(() => {
@@ -116,6 +143,64 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  // Off the home page there is nothing to scroll-spy, so the current route is
+  // what reads as active instead.
+  const currentId = onHome
+    ? activeId
+    : (NAV_ITEMS.find(
+        (item) => item.kind === "route" && item.segment === route
+      )?.id ?? null);
+
+  const navHref = (item: (typeof NAV_ITEMS)[number]) =>
+    item.kind === "route"
+      ? localePath(lang, item.segment)
+      : onHome
+        ? `#${item.id}`
+        : // Away from home, a section link has to carry you back to the page
+          // that has the section on it.
+          `${localePath(lang)}#${item.id}`;
+
+  const brandMark = (
+    <>
+      <span className="block font-display text-xl leading-none text-cream transition-colors group-hover:text-saffron-glow">
+        {metadata.brandName}
+      </span>
+      <span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.18em] text-saffron-bright sm:tracking-[0.32em]">
+        {t(UI.nav.brandSub)}
+      </span>
+    </>
+  );
+
+  const renderNavLink = (
+    item: (typeof NAV_ITEMS)[number],
+    className: string,
+    onNavigate?: () => void
+  ) => {
+    const label = t(UI.nav[item.id]);
+
+    if (item.kind === "anchor" && onHome) {
+      return (
+        <a
+          href={`#${item.id}`}
+          onClick={(event) => {
+            event.preventDefault();
+            onNavigate?.();
+            scrollToSection(item.id);
+          }}
+          className={className}
+        >
+          {label}
+        </a>
+      );
+    }
+
+    return (
+      <Link href={navHref(item)} onClick={onNavigate} className={className}>
+        {label}
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -131,50 +216,50 @@ export default function Navbar() {
           aria-label="Main navigation"
           className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
         >
-          {/* Brand */}
-          <a
-            href="#top"
-            className="group shrink-0"
-            onClick={(event) => {
-              event.preventDefault();
-              setOpen(false);
-              scrollToSection("top");
-            }}
-          >
-            <span className="block font-display text-xl leading-none text-cream transition-colors group-hover:text-saffron-glow">
-              {metadata.brandName}
-            </span>
-            <span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.18em] text-saffron-bright sm:tracking-[0.32em]">
-              {t(UI.nav.brandSub)}
-            </span>
-          </a>
+          {/* Brand — scrolls to the top on the home page, navigates home from
+              anywhere else, which is what a masthead is expected to do. */}
+          {onHome ? (
+            <a
+              href="#top"
+              className="group shrink-0"
+              onClick={(event) => {
+                event.preventDefault();
+                setOpen(false);
+                scrollToSection("top");
+              }}
+            >
+              {brandMark}
+            </a>
+          ) : (
+            <Link
+              href={localePath(lang)}
+              className="group shrink-0"
+              onClick={() => setOpen(false)}
+            >
+              {brandMark}
+            </Link>
+          )}
 
           {/* Desktop links with sliding active pill */}
           <ul className="hidden items-center gap-1 lg:flex">
-            {NAV_IDS.map((id) => (
-              <li key={id} className="relative">
-                {activeId === id && (
+            {NAV_ITEMS.map((item) => (
+              <li key={item.id} className="relative">
+                {currentId === item.id && (
                   <motion.span
                     layoutId="nav-active-pill"
                     className="absolute inset-0 rounded-full bg-white/8"
                     transition={{ type: "spring", stiffness: 380, damping: 32 }}
                   />
                 )}
-                <a
-                  href={`#${id}`}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    scrollToSection(id);
-                  }}
-                  className={cn(
+                {renderNavLink(
+                  item,
+                  cn(
                     "relative z-10 block rounded-full px-4 py-2 text-sm transition-colors",
-                    activeId === id
+                    currentId === item.id
                       ? "text-cream"
                       : "text-stone-400 hover:text-cream"
-                  )}
-                >
-                  {t(UI.nav[id])}
-                </a>
+                  )
+                )}
               </li>
             ))}
           </ul>
@@ -231,30 +316,29 @@ export default function Navbar() {
             >
               {/* Scrolls internally so the sheet still fits in landscape. */}
               <ul className="max-h-[calc(100dvh-4.5rem)] space-y-1 overflow-y-auto px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
-                {NAV_IDS.map((id, index) => (
+                {NAV_ITEMS.map((item, index) => (
                   <motion.li
-                    key={id}
+                    key={item.id}
                     initial={{ opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.05 + index * 0.05 }}
                   >
-                    <a
-                      href={`#${id}`}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setOpen(false);
-                        scrollToSection(id);
-                      }}
-                      className="block rounded-xl px-4 py-3 text-base text-stone-300 transition-colors hover:bg-white/5 hover:text-cream"
-                    >
-                      {t(UI.nav[id])}
-                    </a>
+                    {renderNavLink(
+                      item,
+                      cn(
+                        "block rounded-xl px-4 py-3 text-base transition-colors hover:bg-white/5 hover:text-cream",
+                        currentId === item.id
+                          ? "bg-white/5 text-cream"
+                          : "text-stone-300"
+                      ),
+                      () => setOpen(false)
+                    )}
                   </motion.li>
                 ))}
                 <motion.li
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 + NAV_IDS.length * 0.05 }}
+                  transition={{ delay: 0.05 + NAV_ITEMS.length * 0.05 }}
                   className="flex flex-col gap-2 pt-3 sm:flex-row"
                 >
                   <a
