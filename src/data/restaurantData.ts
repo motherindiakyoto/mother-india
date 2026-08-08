@@ -512,6 +512,21 @@ export const RESTAURANT_DATA: RestaurantData = {
         // No `image`: there is no vegetarian dish photography yet, and the
         // salad shot already in /public would misrepresent a paneer curry.
         items: [
+          // Leads the section by choice, not by menu order: it's the dish
+          // vegetarian guests most often come looking for, and the rest of the
+          // list follows the printed menu's numbering from here.
+          //
+          // Not on the photographed curry page — confirmed directly by the
+          // restaurant, priced to match the chicken biryani.
+          {
+            name: { en: "Vegetable Biryani", ja: "ベジタブルビリヤニ" },
+            price: "¥1,350",
+            recommended: true,
+            description: {
+              en: "Served with raita",
+              ja: "ライタ添え",
+            },
+          },
           {
             name: { en: "Vegetable Curry", ja: "野菜カレー" },
             price: "¥1,050",
@@ -608,18 +623,6 @@ export const RESTAURANT_DATA: RestaurantData = {
             description: {
               en: "Paneer simmered in a buttery, creamy tomato sauce",
               ja: "パニールをバターとトマトのクリーミーなソースで",
-            },
-          },
-          // Not on the photographed curry page — confirmed directly by the
-          // restaurant, priced to match the chicken biryani. Listed here rather
-          // than only under Rice & Biryani so it's found where vegetarian
-          // guests are already looking.
-          {
-            name: { en: "Vegetable Biryani", ja: "ベジタブルビリヤニ" },
-            price: "¥1,350",
-            description: {
-              en: "Served with raita",
-              ja: "ライタ添え",
             },
           },
         ],
