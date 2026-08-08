@@ -14,6 +14,7 @@ import { CalendarCheck, Menu, Phone, X } from "lucide-react";
 import { RESTAURANT_DATA } from "@/data/restaurantData";
 import { UI, localePath, routeFromPath, type Lang } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
+import BrandMark from "@/components/BrandMark";
 import { buttonVariants } from "@/components/ui/button";
 import { cn, scrollToSection } from "@/lib/utils";
 import { useBookingUrl } from "@/lib/useBookingUrl";
@@ -161,15 +162,18 @@ export default function Navbar() {
           // that has the section on it.
           `${localePath(lang)}#${item.id}`;
 
-  const brandMark = (
-    <>
-      <span className="block font-display text-xl leading-none text-cream transition-colors group-hover:text-saffron-glow">
-        {metadata.brandName}
+  const brandLockup = (
+    <span className="flex items-center gap-2.5">
+      <BrandMark className="size-9 transition-transform duration-200 group-hover:scale-105 sm:size-10" />
+      <span className="block">
+        <span className="block font-display text-xl leading-none text-cream transition-colors group-hover:text-saffron-glow">
+          {metadata.brandName}
+        </span>
+        <span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.18em] text-saffron-bright sm:tracking-[0.32em]">
+          {t(UI.nav.brandSub)}
+        </span>
       </span>
-      <span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.18em] text-saffron-bright sm:tracking-[0.32em]">
-        {t(UI.nav.brandSub)}
-      </span>
-    </>
+    </span>
   );
 
   const renderNavLink = (
@@ -228,7 +232,7 @@ export default function Navbar() {
                 scrollToSection("top");
               }}
             >
-              {brandMark}
+              {brandLockup}
             </a>
           ) : (
             <Link
@@ -236,7 +240,7 @@ export default function Navbar() {
               className="group shrink-0"
               onClick={() => setOpen(false)}
             >
-              {brandMark}
+              {brandLockup}
             </Link>
           )}
 
