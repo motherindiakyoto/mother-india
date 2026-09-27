@@ -83,6 +83,31 @@ export interface SpiceLevel {
   label: L;
 }
 
+export interface LunchMenuSet {
+  name: L;
+  price: number;
+  items: string[];
+}
+
+export interface LunchMenu {
+  hours: string;
+  extras: {
+    extraPlainNanOrRice: number;
+  };
+  spiceLevels: Array<{ level: number; name: L }>;
+  curryChoices: Array<{ id: number; name: L }>;
+  sets: LunchMenuSet[];
+  nanUpgrades: {
+    cheeseNan: number;
+    garlicNan: number;
+    sesameNan: number;
+  };
+  drinks: string[];
+  drinkAddOnPrice: number;
+  beerUpgradePrice: number;
+  image: { src: string; alt: string; caption: L };
+}
+
 /**
  * A question guests actually ask, with an answer taken only from the facts
  * already on this page — hours, floor, payment, spice, dietary handling.
@@ -123,6 +148,7 @@ export interface RestaurantData {
     cardBrands: L;
   };
   spiceLevels: SpiceLevel[];
+  lunchMenu: LunchMenu;
   fullMenu: {
     sections: FullMenuSection[];
   };
@@ -266,6 +292,62 @@ export const RESTAURANT_DATA: RestaurantData = {
     { step: 4, label: { en: "Double Hot", ja: "辛口" } },
     { step: 5, label: { en: "Very Hot", ja: "激辛" } },
   ],
+
+  lunchMenu: {
+    hours: "11:00 – 15:00",
+    extras: { extraPlainNanOrRice: 150 },
+    spiceLevels: [
+      { level: 1, name: { en: "Mild", ja: "セト" } },
+      { level: 2, name: { en: "Normal", ja: "普通" } },
+      { level: 3, name: { en: "Medium Hot", ja: "中辛" } },
+      { level: 4, name: { en: "Double Hot", ja: "辛口" } },
+      { level: 5, name: { en: "Very Hot", ja: "激辛" } },
+    ],
+    curryChoices: [
+      { id: 1, name: { en: "Today Curry", ja: "日替わりカレー" } },
+      { id: 2, name: { en: "Vegetable Curry", ja: "野菜カレー" } },
+      { id: 3, name: { en: "Chicken Curry", ja: "チキンカレー" } },
+      { id: 4, name: { en: "Saag Chicken Curry", ja: "ほうれん草チキン" } },
+      { id: 5, name: { en: "Butter Chicken Curry", ja: "バターチキン" } },
+      { id: 6, name: { en: "Keema Curry", ja: "キーマカレー" } },
+      { id: 7, name: { en: "Seafood Curry", ja: "シーフード" } },
+    ],
+    sets: [
+      { name: { en: "Today's Lunch", ja: "日替わりランチ" }, price: 890, items: ["Today's Curry", "Plain Nan", "Salad", "Drink"] },
+      { name: { en: "A Lunch", ja: "Aランチ" }, price: 1050, items: ["Curry 1 Choice", "Plain Nan or Rice", "Chicken Tikka (1p)", "Salad", "Drink"] },
+      { name: { en: "Cheese Nan Lunch", ja: "チーズナンランチ" }, price: 1250, items: ["Curry 1 Choice", "Cheese Nan", "Chicken Tikka (1p)", "Rice", "Salad", "Drink"] },
+      { name: { en: "C Lunch", ja: "Cランチ" }, price: 1290, items: ["Curry 2 Choice", "Plain Nan", "Rice", "Chicken Tikka (1p)", "Salad", "Drink"] },
+      { name: { en: "MOTHER INDIA Lunch", ja: "マザーインディアランチ" }, price: 1550, items: ["Curry 2 Choice", "Plain Nan", "Rice", "Seekh Kebab (1p)", "Chicken Tikka (1p)", "Salad", "Drink", "Dessert"] },
+      { name: { en: "B Lunch", ja: "Bランチ" }, price: 1100, items: ["Curry 1 Choice", "Plain Nan", "Rice", "Chicken Tikka (1p)", "Salad", "Drink"] },
+      { name: { en: "Mutton Curry lunch", ja: "マトンカレーランチ" }, price: 1150, items: ["Mutton Curry", "Plain Nan", "Rice", "Chicken Tikka (1p)", "Salad", "Drink"] },
+      { name: { en: "Student Lunch", ja: "学生ランチ" }, price: 1100, items: ["Curry 1 Choice", "Nan 1 Choice (Honey/Garlic/Cheese/Sesame)", "Chicken Tikka (1p)", "Salad"] },
+      { name: { en: "A' Lunch", ja: "A'ランチ" }, price: 750, items: ["Mild Butter Chicken Curry", "Plain Nan", "Potato Fries", "Salad", "Drink", "Dessert"] },
+      { name: { en: "Chicken Biryani lunch", ja: "ビリヤニランチ (チキン)" }, price: 1950, items: ["Chicken Biryani", "Raita", "Salad", "Chutney / Onion Slices"] },
+      { name: { en: "Mutton Biryani lunch", ja: "ビリヤニランチ (マトン)" }, price: 2050, items: ["Mutton Biryani", "Raita", "Salad", "Chutney / Onion Slices"] },
+      { name: { en: "Takeout Bento", ja: "テイクアウト弁当" }, price: 750, items: ["Curry 1 Choice (from 7 types)", "Plain Nan", "Salad"] },
+    ],
+    nanUpgrades: { cheeseNan: 300, garlicNan: 250, sesameNan: 250 },
+    drinks: [
+      "Chai (Hot or Ice)",
+      "Coffee (Hot or Ice)",
+      "Cola",
+      "Calpis",
+      "Orange Juice",
+      "Oolong Tea",
+      "Mango Juice",
+      "Lassi",
+      "Blue Berry Lassi",
+      "Mango Lassi",
+      "Strawberry Lassi",
+    ],
+    drinkAddOnPrice: 100,
+    beerUpgradePrice: 200,
+    image: {
+      src: "/images/img1.jpg",
+      alt: "Mother India lunch menu",
+      caption: { en: "Lunch menu", ja: "ランチメニュー" },
+    },
+  },
 
   fullMenu: {
     sections: [

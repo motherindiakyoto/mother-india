@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import { ArrowUp, ExternalLink, Flame, Leaf } from "lucide-react";
 
-import { RESTAURANT_DATA } from "@/data/restaurantData";
+import { RESTAURANT_DATA, type LunchMenu } from "@/data/restaurantData";
 import { UI } from "@/data/i18n";
 import { useLang } from "@/components/LanguageProvider";
 import MenuRow from "@/components/MenuRow";
@@ -21,6 +21,99 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 /** DOM id for a menu section. Namespaced so it can't collide with `#menu`. */
 const sectionDomId = (id: string) => `menu-${id}`;
+
+function LunchMenuPanel({ menu }: { menu: LunchMenu }) {
+  const { t } = useLang();
+  const price = (amount: number) => `¥${amount.toLocaleString("en-US")}`;
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 md:pb-12 md:pt-14 lg:px-8">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-white/8 pb-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-saffron-glow">
+            {t({ en: "11:00 - 15:00", ja: "11:00 - 15:00" })}
+          </p>
+          <h2 className="mt-2 font-display text-2xl text-cream sm:text-3xl">
+            {t({ en: "Lunch Menu", ja: "ランチメニュー" })}
+          </h2>
+        </div>
+        <p className="text-sm text-stone-400">
+          {t({ en: `Extra plain nan or rice +${price(menu.extras.extraPlainNanOrRice)}`, ja: `プレーンナンまたはライス追加 +${price(menu.extras.extraPlainNanOrRice)}` })}
+        </p>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-[300px_1fr] lg:gap-12">
+        <figure className="overflow-hidden rounded-3xl border border-white/10 bg-obsidian-card lg:sticky lg:top-40 lg:self-start">
+          <div className="relative aspect-[4/3]">
+            <Image
+              src={menu.image.src}
+              alt={menu.image.alt}
+              fill
+              sizes="300px"
+              className="object-cover"
+            />
+          </div>
+          <figcaption className="px-5 py-4 text-xs leading-relaxed text-stone-400">
+            {t(menu.image.caption)}
+          </figcaption>
+        </figure>
+
+        <div>
+          <div className="grid gap-x-10 md:grid-cols-2">
+            {menu.sets.map((set) => (
+              <article key={set.name.en} className="border-b border-white/5 py-3.5">
+                <div className="flex items-baseline gap-3">
+                  <h3 className="text-sm font-medium text-cream sm:text-base">
+                    {t(set.name)}
+                  </h3>
+                  <span aria-hidden="true" className="mb-1 flex-1 border-b border-dotted border-white/15" />
+                  <span className="shrink-0 text-sm tabular-nums text-stone-300 sm:text-base">
+                    {price(set.price)}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-stone-500">
+                  {set.items.join(" · ")}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+              <h3 className="text-sm font-medium text-cream">{t({ en: "Curry choices", ja: "カレーの種類" })}</h3>
+              <ul className="mt-3 space-y-1.5 text-xs text-stone-400">
+                {menu.curryChoices.map((choice) => (
+                  <li key={choice.id}>
+                    {choice.id}. {t(choice.name)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+              <h3 className="text-sm font-medium text-cream">{t({ en: "Spice levels", ja: "辛さ" })}</h3>
+              <ul className="mt-3 space-y-1.5 text-xs text-stone-400">
+                {menu.spiceLevels.map((level) => (
+                  <li key={level.level}>
+                    {level.level}. {t(level.name)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4 sm:col-span-2">
+              <h3 className="text-sm font-medium text-cream">{t({ en: "Nan upgrades & drinks", ja: "ナンの追加料金・ドリンク" })}</h3>
+              <p className="mt-3 text-xs leading-relaxed text-stone-400">
+                Cheese Nan +{price(menu.nanUpgrades.cheeseNan)} · Garlic Nan +{price(menu.nanUpgrades.garlicNan)} · Sesame Nan +{price(menu.nanUpgrades.sesameNan)} · Drink +{price(menu.drinkAddOnPrice)} · Beer upgrade +{price(menu.beerUpgradePrice)}
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-stone-500">
+                {menu.drinks.join(" · ")}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 /**
  * The whole menu on one page.
@@ -35,7 +128,7 @@ const sectionDomId = (id: string) => `menu-${id}`;
  * scroll past to reach what they came for.
  */
 export default function FullMenu() {
-  const { fullMenu, metadata, spiceLevels } = RESTAURANT_DATA;
+  const { fullMenu, lunchMenu, metadata, spiceLevels } = RESTAURANT_DATA;
   const { sections } = fullMenu;
   const { t } = useLang();
   const reduce = useReducedMotion();
@@ -120,6 +213,8 @@ export default function FullMenu() {
           document with no h1 loses both its accessibility outline and the
           strongest on-page ranking signal it has. */}
       <h1 className="sr-only">{t(UI.menuPage.title)}</h1>
+
+      <LunchMenuPanel menu={lunchMenu} />
 
       {/* ---------- Sticky category rail ----------
           Sits directly beneath the fixed navbar. One row at every width — it
